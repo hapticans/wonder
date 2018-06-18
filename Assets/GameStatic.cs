@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProcedureController : MonoBehaviour {
 
     // Denotes the order of the buttons to be pressed
-    static string[] procedure;
+    static var string[] procedure;
     // Current Index in List of button order
     int currentIndex;
 
@@ -19,7 +19,9 @@ public class ProcedureController : MonoBehaviour {
 		
 	}
 
-    string getCorrectButton() => procedure[currentIndex];
+    public static string getCorrectButton() {
+			return  procedure[currentIndex];
+	}
 
 
 }
