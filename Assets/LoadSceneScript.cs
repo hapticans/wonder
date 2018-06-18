@@ -8,29 +8,41 @@ public class LoadSceneScript : MonoBehaviour
 {
 
     public string SceneConfigFolder = "Scene_1";
-    
+
+    public GameObject persistenceManager;
 
     // Use this for initialization
     void Start()
     {
-        GameObject hand = GameObject.Find("Druckschalter (1)");
-        Destroy(hand);
-        LoadScene();
+        // Instantiate Global Singleton
+        if (PersistentManager.Instance == null)
+        {
+            Instantiate(persistenceManager);
+        }
+
+        // Get Filepath
+        string filePath = Application.dataPath + "/" + SceneConfigFolder + "/";
+
+        LoadProcedure(filePath); 
+        LoadObjects(filePath);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown("1"))
+        {
+            GameObject button = GameObject.Find("Druckschalter_1_Knopf");
+            button.GetComponent<CustomButton>().checkButton();
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            GameObject button = GameObject.Find("Druckschalter_2_Knopf");
+            button.GetComponent<CustomButton>().checkButton();
+        }
     }
 
-    void LoadScene()
-    {
-        string filePath = Application.dataPath + "/" + SceneConfigFolder + "/";
-
-        LoadObjects(filePath);
-    }
-
+    // Loads needed GameObjects from file
     void LoadObjects(string filepath)
     {
         string objectfile = filepath + "objects.txt"; 
@@ -72,6 +84,7 @@ public class LoadSceneScript : MonoBehaviour
                 {
                     String[] line = data[i].Split(';');
                     int timeout = Int32.Parse(line[0]);
+                    //TODO(specki): Parse Events 
                 }
             }
         } else
@@ -80,9 +93,20 @@ public class LoadSceneScript : MonoBehaviour
         }
     }
 
-    IEnumerator Fade(float time)
+    // Loads List of Data Objects
+    void LoadProcedure(string filepath)
     {
-        yield return new WaitForSeconds(time);
+        string objectfile = filepath + "procedure.txt";
+        if (File.Exists(objectfile))
+        {
+            // Iterate through Object list
+            String[] data = File.ReadAllLines(objectfile);
+            PersistentManager.Instance.procedure = data;
+        }
+        else
+        {
+            Debug.LogError("Did not load Procedure. File not found: " + objectfile);
+        }
     }
 
 }

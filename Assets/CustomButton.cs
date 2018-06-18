@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CustomButton : MonoBehaviour {
 
+    
+
 	// Use this for initialization
 	void Start () {
 		
@@ -19,12 +21,24 @@ public class CustomButton : MonoBehaviour {
 	}
 	
 	void OnTriggerEnter() {
-		GetComponent<Renderer>().enabled = false;
-		if (name == GameStatic.getCorrectButton()) {
-			Debug.Log("incorrect button");
-		} else {
-			Debug.Log("triggering");
-		}
+        checkButton();
 	}
+
+    public void checkButton()
+    {
+        string correct = PersistentManager.Instance.getCorrectStep();
+
+        if (name == correct)
+        {
+            Material mat = GetComponent<Renderer>().material;
+            mat.color = Color.green;
+            Debug.Log("Pressed Correct Button");
+            PersistentManager.Instance.advanceStep();
+        }
+        else
+        {
+            Debug.Log("Pressed wrong button");
+        }
+    }
 	
 }
