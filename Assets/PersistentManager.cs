@@ -6,7 +6,7 @@ public class PersistentManager : MonoBehaviour {
 
     public static PersistentManager Instance { get; private set; }
 
-    public string[] procedure { get; set; }
+	public SequenceElement procedure { get; set; }
 
     private int procedureRunner = 0;
 
@@ -22,24 +22,12 @@ public class PersistentManager : MonoBehaviour {
         }
     }
 
-    public string getCorrectStep()
-    {
-        return procedure[procedureRunner];
-    }
+	public string isStepValid(string name)
+	{
+		return procedure.checkIfCorrect(name);
+	}
 
-    // Return true if successfully switched to next step.
-    // Return false if at End of Steps
-    public bool advanceStep()
-    {
-        if (procedureRunner < procedure.Length-1)
-        {
-            procedureRunner++;
-            return true;
-        } else
-        {
-            return false;
-        }
-    }
+
 
 	// Use this for initialization
 	void Start () {

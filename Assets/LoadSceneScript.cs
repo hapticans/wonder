@@ -11,6 +11,10 @@ public class LoadSceneScript : MonoBehaviour
 
     public GameObject persistenceManager;
 
+	private Dictionary<String, String> sequenceDictionary;
+
+	private String[] sequenceArray;
+
     // Use this for initialization
     void Start()
     {
@@ -101,7 +105,7 @@ public class LoadSceneScript : MonoBehaviour
         {
             // Iterate through Object list
             String[] data = File.ReadAllLines(objectfile);
-            PersistentManager.Instance.procedure = data;
+            PersistentManager.Instance.procedure = parseSequenceElementRow(sequenceArray[0])
         }
         else
         {
@@ -109,4 +113,61 @@ public class LoadSceneScript : MonoBehaviour
         }
     }
 
+	void generateDictionaryAndArray(String input)
+	{      
+        // Save as Array
+		String[] semicolonArray = input.Split[';'];
+		String[] sequenceArray = new String[semicolonArray.Length]:
+
+		// Create Dictionary
+        sequenceDictionary = new Dictionary<string, string>();
+		for (int i = 0; i < semicolonArray.GetLength(0); i++)
+		{
+			String[] doubledotSplit = semicolonArray[i].Split[':'];
+            // Copy Value to Sequence Array - discard sequence name
+			sequenceArray[i] = doubledotSplit[1];
+            // Add Key-Value to Dictionary with SequenceName-Sequence Definition
+			sequenceDictionary.Add(doubledotSplit[0], doubledotSplit[1]);
+		}
+	}
+
+    SequenceElement parseSequenceElementRow(String input)
+	{
+		String[] commaSplit = sequenceArray[i].Split(',');      
+
+        // Behandle ganze Zeile
+		SequenceElement[] elements = new SequenceElement[commaSplit.Length-2];
+        for (int j = 2; j < commaSplit.Length; j++)
+        {
+			elements[j-2] = parseSequenceElement(commaSplit[i]);
+        }
+              
+		SequenceElement seq = Sequence(
+			Int32.Parse(commaSplit[0]),
+            Int32.Parse(commaSplit[1]),
+			elements
+		);
+
+		return seq;
+	}
+
+    // Parsing of single String
+	SequenceElement parseSequenceElement(String input)
+	{
+		// Behandle einzelnen Wert
+        if (commaSplit.Length == 1)
+        {
+            // Pruefe ob Referenz oder InputElement
+            if (sequenceDictionary.ContainsKey(input))
+            {
+				String value;
+				sequenceDictionary.TryGetValue(input, key);
+				return parseSequenceElementRow(value);
+            }
+            else
+            {
+                return InputElement(input);
+            }
+        }	
+	}
 }
