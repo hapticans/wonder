@@ -22,7 +22,7 @@ public class LoadSceneScript : MonoBehaviour
         if (PersistentManager.Instance == null)
         {
             Instantiate(persistenceManager);
-        }
+        };
 
         // Get Filepath
         string filePath = Application.dataPath + "/" + SceneConfigFolder + "/";
@@ -34,16 +34,10 @@ public class LoadSceneScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("1"))
-        {
-            GameObject button = GameObject.Find("Druckschalter_1_Knopf");
-            button.GetComponent<CustomButton>().checkButton();
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            GameObject button = GameObject.Find("Druckschalter_2_Knopf");
-            button.GetComponent<CustomButton>().checkButton();
-        }
+        // Temporary Development Helpers
+        //TODO: remove
+        DevelopHelper dev = new DevelopHelper();
+        dev.registerKeyBindings();
     }
 
     // Loads needed GameObjects from file
@@ -104,8 +98,10 @@ public class LoadSceneScript : MonoBehaviour
         if (File.Exists(objectfile))
         {
             // Iterate through Object list
-            String[] data = File.ReadAllLines(objectfile);
-            PersistentManager.Instance.procedure = parseSequenceElementRow(sequenceArray[0])
+            String data = File.ReadAllText(objectfile);
+            generateDictionaryAndArray(data);
+
+            PersistentManager.Instance.procedure = this.parseSequenceElementRow(sequenceArray[0]);
         }
         else
         {
@@ -116,35 +112,35 @@ public class LoadSceneScript : MonoBehaviour
 	void generateDictionaryAndArray(String input)
 	{      
         // Save as Array
-		String[] semicolonArray = input.Split[';'];
-		String[] sequenceArray = new String[semicolonArray.Length]:
+		String[] semicolonArray = input.Split(';');
+        sequenceArray = new String[semicolonArray.Length];
 
 		// Create Dictionary
         sequenceDictionary = new Dictionary<string, string>();
-		for (int i = 0; i < semicolonArray.GetLength(0); i++)
+        for (int i = 0; i < semicolonArray.GetLength(0)-1; i++)
 		{
-			String[] doubledotSplit = semicolonArray[i].Split[':'];
+			String[] doubledotSplit = semicolonArray[i].Split(':');
             // Copy Value to Sequence Array - discard sequence name
 			sequenceArray[i] = doubledotSplit[1];
             // Add Key-Value to Dictionary with SequenceName-Sequence Definition
-			sequenceDictionary.Add(doubledotSplit[0], doubledotSplit[1]);
+            sequenceDictionary.Add(doubledotSplit[0].Replace(System.Environment.NewLine, ""), doubledotSplit[1]);
 		}
 	}
 
     SequenceElement parseSequenceElementRow(String input)
 	{
-		String[] commaSplit = sequenceArray[i].Split(',');      
+		String[] commaSplit = input.Split(',');      
 
         // Behandle ganze Zeile
 		SequenceElement[] elements = new SequenceElement[commaSplit.Length-2];
         for (int j = 2; j < commaSplit.Length; j++)
         {
-			elements[j-2] = parseSequenceElement(commaSplit[i]);
+			elements[j-2] = parseSequenceElement(commaSplit[j]);
         }
               
-		SequenceElement seq = Sequence(
-			Int32.Parse(commaSplit[0]),
-            Int32.Parse(commaSplit[1]),
+		SequenceElement seq = new Sequence(
+            Int32.Parse(commaSplit[0]),
+            Convert.ToBoolean(commaSplit[1]),
 			elements
 		);
 
@@ -154,20 +150,17 @@ public class LoadSceneScript : MonoBehaviour
     // Parsing of single String
 	SequenceElement parseSequenceElement(String input)
 	{
-		// Behandle einzelnen Wert
-        if (commaSplit.Length == 1)
+        // Pruefe ob Referenz oder InputElement
+        if (sequenceDictionary.ContainsKey(input))
         {
-            // Pruefe ob Referenz oder InputElement
-            if (sequenceDictionary.ContainsKey(input))
-            {
-				String value;
-				sequenceDictionary.TryGetValue(input, key);
-				return parseSequenceElementRow(value);
-            }
-            else
-            {
-                return InputElement(input);
-            }
-        }	
-	}
+			String value;
+			sequenceDictionary.TryGetValue(input, out value);
+			return parseSequenceElementRow(value);
+        }
+        else
+        {
+            Debug.Log("Setting up input element:" + input);
+            return new InputElement(input);
+        }
+}
 }

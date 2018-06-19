@@ -26,19 +26,19 @@ public class CustomButton : MonoBehaviour {
 
     public void checkButton()
     {
-        string correct = PersistentManager.Instance.getCorrectStep();
-
-        if (name == correct)
+        //print(name);
+        //PersistentManager.Instance.printSequence();
+        if (PersistentManager.Instance.isStepValid(name))
         {
             Material mat = GetComponent<Renderer>().material;
             mat.color = Color.green;
-            Debug.Log("Pressed Correct Button");
-            PersistentManager.Instance.advanceStep();
+            //Debug.Log("Pressed Correct Button");
         }
         else
         {
-            Debug.Log("Pressed wrong button");
+            //Debug.Log("Pressed wrong button");
         }
     }
 	
+
 }

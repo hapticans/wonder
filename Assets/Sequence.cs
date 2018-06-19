@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using UnityEngine;
 
 public class Sequence : SequenceElement
 {
@@ -15,9 +16,8 @@ public class Sequence : SequenceElement
     // Bool ob Reihenfolge eingehalten werden muss
     private bool order = false;
 
-
     // Elemente dieser Sequenz
-    private SequenceElement elements;
+    private SequenceElement[] elements;
 
 
     public Sequence(int counter, bool order, SequenceElement[] elements)
@@ -26,33 +26,26 @@ public class Sequence : SequenceElement
         this.order = order;
         this.elements = elements;
     }
-    
-    bool checkIfCorrect(String name)
+
+    public bool checkIfCorrect(String name)
     {
+        //Debug.Log(elements.Length);
+        //Debug.Log("Returncounter" + returncounter);
         // Sequenz abgearbeitet
         if (counterReached()) { return false; }
 
-        //
+        bool returnValue = false;
         if (order)
         {
-            bool returnValue = false;
             // Check if Element is already finished
             if (elements[runner].counterReached())
             {
                 // Increment runner to check next element
                 runner++;
             }
-            bool returnValue = elements[runner].checkIfCorrect(name);
-            
-            // Increment Return Value when true was returned
-            if (returnValue)
-            {
-                returncounter++;
-            }
-            return returnValue;
+            returnValue = elements[runner].checkIfCorrect(name);
         } else
         {
-            bool returnValue = false;
             for (int i = 0; i < elements.GetLength(0); i++)
             {
                 returnValue = elements[i].checkIfCorrect(name);
@@ -60,17 +53,21 @@ public class Sequence : SequenceElement
                 // Already found fitting Element
                 if (returnValue)
                 {
-                    returncounter++;
                     break;
                 }
             }         
-            return returnValue;
         }
-    };
+        // Increment Return Counter when true was returned AND subsequence is fully satisfied
+        if (returnValue && elements[runner].counterReached())
+        {
+            returncounter++;
+        }
+        return returnValue;
+    }
 
-    bool counterReached()
+    public bool counterReached()
     {
         return returncounter >= targetInteractionCount; 
-    };
+    }
     
 }
