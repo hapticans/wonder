@@ -22,7 +22,7 @@ public class PersistentManager : MonoBehaviour {
         }
     }
 
-	public string isStepValid(string name)
+	public bool isStepValid(string name)
 	{
 		return procedure.checkIfCorrect(name);
 	}
@@ -38,4 +38,10 @@ public class PersistentManager : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void printSequence()
+    {
+        print(procedure);
+        print(procedure.counterReached());
+    }
 }

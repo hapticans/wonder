@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,22 +21,17 @@ public class CustomButton : MonoBehaviour {
 	void OnCollisionEnter() {
 			Debug.Log("Colliding with button");
 	}
-	
+
 	void OnTriggerEnter() {
         checkButton();
 	}
 
     public void checkButton()
     {
-		string correct = PersistentManager.Instance.getCorrectStep();
-		originalMaterial = GetComponent<Renderer>().material;
-
-		mat = originalMaterial;
-        if (name == correct)
+        if (PersistentManager.Instance.isStepValid(name))
         {
             mat.color = Color.green;
-            Debug.Log("Pressed Correct Button");
-            PersistentManager.Instance.advanceStep();
+            //Debug.Log("Pressed Correct Button");
         }
         else
 		{

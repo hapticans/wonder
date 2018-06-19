@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class InputElement : SequenceElement
 {
@@ -10,9 +12,10 @@ public class InputElement : SequenceElement
     {
         this.name = name;
     }
-    
-    bool checkIfCorrect(String input)
+
+    public bool checkIfCorrect(String input)
     {
+        Debug.Log("Checking Element" + this.name + " against" + input);
         // Element bereits aktiviert
         if (counter) { return false; }
         
@@ -22,11 +25,11 @@ public class InputElement : SequenceElement
             return true;
         }
         return false;
-    };
+    }
     
     
-    bool counterReached()
+    public bool counterReached()
     {
         return counter;
-    };
+    }
 }
