@@ -3,9 +3,9 @@ Druckschalter_2
 Druckschalter_3
 Druckschalter_4
 Druckschalter_5
-//Druckschalter_6
-//Druckschalter_7
-//Druckschalter_8
+Druckschalter_6
+Druckschalter_7
+Druckschalter_8
 Druckschalter_9
 Druckschalter_10
 Druckschalter_11
