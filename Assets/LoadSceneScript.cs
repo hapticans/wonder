@@ -159,7 +159,7 @@ public class LoadSceneScript : MonoBehaviour
         }
         else
         {
-            Debug.Log("Setting up input element:" + input);
+            //Debug.Log("Setting up input element:" + input);
             return new InputElement(input);
         }
 }

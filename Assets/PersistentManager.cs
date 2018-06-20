@@ -10,6 +10,8 @@ public class PersistentManager : MonoBehaviour {
 
     private int procedureRunner = 0;
 
+     private int procedureTarget = 0;
+
     private void Awake()
     {
         if (Instance == null)
@@ -27,7 +29,22 @@ public class PersistentManager : MonoBehaviour {
 		return procedure.checkIfCorrect(name);
 	}
 
+    public bool isProcedureDone(bool sqeunceJustDone)
+	{
+        if(sqeunceJustDone){procedureRunner++;}
+        if(procedureRunner >= procedureTarget){
+            return true;
+        }
+		return false;
+	}
 
+    public void setProceduretarget(int initTarget)
+	{
+        if(procedureTarget == 0){
+            Debug.Log("<");
+            procedureTarget = initTarget;
+        }
+	}
 
 	// Use this for initialization
 	void Start () {

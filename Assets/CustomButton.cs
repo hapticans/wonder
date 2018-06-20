@@ -6,11 +6,12 @@ public class CustomButton : MonoBehaviour {
 
 	private Material mat;
 
-	private Material originalMaterial;
+	private Color prevColor;
 
 	// Use this for initialization
 	void Start () {
-		
+		mat = GetComponent<Renderer>().material;
+        prevColor = mat.color;
 	}
 	
 	// Update is called once per frame
@@ -31,11 +32,15 @@ public class CustomButton : MonoBehaviour {
         if (PersistentManager.Instance.isStepValid(name))
         {
             mat.color = Color.green;
+            prevColor = Color.green;
             //Debug.Log("Pressed Correct Button");
+            if(PersistentManager.Instance.isProcedureDone(false)){
+                feedbackForSucces();
+            }
         }
         else
 		{
-			StartCoroutine(resetColor);
+			StartCoroutine(resetColor());
             mat.color = Color.red;
             Debug.Log("Pressed wrong button");
         }
@@ -45,7 +50,12 @@ public class CustomButton : MonoBehaviour {
     IEnumerator resetColor()
     {
         yield return new WaitForSeconds(1);
-		GetComponent<Renderer>().material = originalMaterial;
+		GetComponent<Renderer>().material.color = prevColor;
     }
 	
+    public void feedbackForSucces(){
+        mat.color = Color.blue;
+                StartCoroutine(resetColor());
+                Debug.Log("Done!");
+    }
 }

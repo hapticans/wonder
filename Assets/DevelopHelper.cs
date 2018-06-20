@@ -10,55 +10,55 @@ public class DevelopHelper
 
     public void registerKeyBindings()
     {
-        if (Input.GetKeyDown("1"))
+        if (Input.GetKeyDown("1")||Input.GetKeyDown("[1]"))
         {
             GameObject button = GameObject.Find("Druckschalter_1_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("2"))
+        if (Input.GetKeyDown("2")||Input.GetKeyDown("[2]"))
         {
             GameObject button = GameObject.Find("Druckschalter_2_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("3"))
+        if (Input.GetKeyDown("3")||Input.GetKeyDown("[3]"))
         {
             GameObject button = GameObject.Find("Druckschalter_3_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("4"))
+        if (Input.GetKeyDown("4")||Input.GetKeyDown("[4]"))
         {
             GameObject button = GameObject.Find("Druckschalter_4_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("5"))
+        if (Input.GetKeyDown("5")||Input.GetKeyDown("[5]"))
         {
             GameObject button = GameObject.Find("Druckschalter_5_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("6"))
+        if (Input.GetKeyDown("6")||Input.GetKeyDown("[6]"))
         {
             GameObject button = GameObject.Find("Druckschalter_6_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("7"))
+        if (Input.GetKeyDown("7")||Input.GetKeyDown("[7]"))
         {
             GameObject button = GameObject.Find("Druckschalter_7_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("8"))
+        if (Input.GetKeyDown("8")||Input.GetKeyDown("[8]"))
         {
             GameObject button = GameObject.Find("Druckschalter_8_Knopf");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
-        if (Input.GetKeyDown("9"))
+        if (Input.GetKeyDown("9")||Input.GetKeyDown("[9]"))
         {
             GameObject button = GameObject.Find("Druckschalter_9_Knopf");
             button.GetComponent<CustomButton>().checkButton();

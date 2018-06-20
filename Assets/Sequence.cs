@@ -19,12 +19,12 @@ public class Sequence : SequenceElement
     // Elemente dieser Sequenz
     private SequenceElement[] elements;
 
-
     public Sequence(int counter, bool order, SequenceElement[] elements)
     {
         this.targetInteractionCount = counter;
         this.order = order;
         this.elements = elements;
+        PersistentManager.Instance.setProceduretarget(counter);
     }
 
     public bool checkIfCorrect(String name)
@@ -32,10 +32,9 @@ public class Sequence : SequenceElement
         //Debug.Log(elements.Length);
         //Debug.Log("Returncounter" + returncounter);
         // Sequenz abgearbeitet
-        if (counterReached()) { return false; }
-
+        if (counterReached()) { Debug.LogError("Already Done!"); return false; }
         bool returnValue = false;
-        if (order)
+        if (order && !counterReached())
         {
             // Check if Element is already finished
             if (elements[runner].counterReached())
@@ -45,7 +44,7 @@ public class Sequence : SequenceElement
             }
             returnValue = elements[runner].checkIfCorrect(name);
         } else
-        {
+        if(!order){
             for (int i = 0; i < elements.GetLength(0); i++)
             {
                 returnValue = elements[i].checkIfCorrect(name);
@@ -55,18 +54,25 @@ public class Sequence : SequenceElement
                 {
                     break;
                 }
-            }         
+            }
         }
         // Increment Return Counter when true was returned AND subsequence is fully satisfied
         if (returnValue && elements[runner].counterReached())
         {
             returncounter++;
         }
+        // Sequenz abgearbeitet
+        if (counterReached()) { Debug.LogError("Squenz Done 1st!");PersistentManager.Instance.isProcedureDone(true);}
         return returnValue;
     }
 
     public bool counterReached()
     {
+        Debug.Log(returncounter);
+        //Fängt Fehler beim erstellen von Szenen ab, sonst out of bounce
+        if(runner >= this.elements.GetLength(0)){
+            return true;
+        }
         return returncounter >= targetInteractionCount; 
     }
     
