@@ -62,13 +62,12 @@ public class Sequence : SequenceElement
             returncounter++;
         }
         // Sequenz abgearbeitet
-        if (counterReached()) { Debug.LogError("Squenz Done 1st!");PersistentManager.Instance.isProcedureDone(true);}
+        if (counterReached()) { Debug.Log("Squenz Done 1st!");PersistentManager.Instance.isProcedureDone(true);}
         return returnValue;
     }
 
     public bool counterReached()
     {
-        Debug.Log(returncounter);
         //Fängt Fehler beim erstellen von Szenen ab, sonst out of bounce
         if(runner >= this.elements.GetLength(0)){
             return true;

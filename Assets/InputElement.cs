@@ -15,7 +15,7 @@ public class InputElement : SequenceElement
 
     public bool checkIfCorrect(String input)
     {
-        Debug.Log("Checking Element" + this.name + " against" + input);
+        //Debug.Log("Checking Element" + this.name + " against" + input);
         // Element bereits aktiviert
         if (counter) { return false; }
         

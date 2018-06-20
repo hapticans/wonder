@@ -12,6 +12,11 @@ public class PersistentManager : MonoBehaviour {
 
      private int procedureTarget = 0;
 
+    //0 entspricht false
+    //1 entspricht einem zwischenschritt
+    //2 entspricht geschafft
+     private int lastProcedureStep = 0;
+
     private void Awake()
     {
         if (Instance == null)
@@ -29,19 +34,25 @@ public class PersistentManager : MonoBehaviour {
 		return procedure.checkIfCorrect(name);
 	}
 
-    public bool isProcedureDone(bool sqeunceJustDone)
+    public int isProcedureDone(bool sqeunceJustDone)
 	{
-        if(sqeunceJustDone){procedureRunner++;}
-        if(procedureRunner >= procedureTarget){
-            return true;
+        int returnValue = lastProcedureStep;
+        if(sqeunceJustDone)
+        {
+            lastProcedureStep = 1;
+            procedureRunner++;
+            if(procedureRunner >= procedureTarget){
+                lastProcedureStep = 2;
+            }
+        }else{
+            lastProcedureStep = 0;
         }
-		return false;
+		return returnValue;
 	}
 
     public void setProceduretarget(int initTarget)
 	{
         if(procedureTarget == 0){
-            Debug.Log("<");
             procedureTarget = initTarget;
         }
 	}

@@ -34,8 +34,14 @@ public class CustomButton : MonoBehaviour {
             mat.color = Color.green;
             prevColor = Color.green;
             //Debug.Log("Pressed Correct Button");
-            if(PersistentManager.Instance.isProcedureDone(false)){
-                feedbackForSucces();
+            int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
+            if(lastProcedureStep == 1)
+            {
+                feedbackForSucces(true);
+            }else
+            if(lastProcedureStep == 2)
+            {
+                feedbackForSucces(false);
             }
         }
         else
@@ -53,9 +59,19 @@ public class CustomButton : MonoBehaviour {
 		GetComponent<Renderer>().material.color = prevColor;
     }
 	
-    public void feedbackForSucces(){
-        mat.color = Color.blue;
-                StartCoroutine(resetColor());
-                Debug.Log("Done!");
+    //false entspricht alles geschafft
+    //true entspricht Zwischenschritt
+    public void feedbackForSucces(bool zwischenschritt)
+    {
+        if(zwischenschritt)
+        {
+            mat.color = Color.white;
+            StartCoroutine(resetColor());
+            Debug.Log("Zwischenschritt!");
+        }else{
+            mat.color = Color.blue;
+            StartCoroutine(resetColor());
+            Debug.Log("Done!");
+        }
     }
 }
