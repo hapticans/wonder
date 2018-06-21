@@ -48,6 +48,9 @@ public class CustomButton : MonoBehaviour {
 		{
 			StartCoroutine(resetColor());
             mat.color = Color.red;
+            if(PersistentManager.Instance.isProcedureFailed()){
+                feedbackForFailure();
+            }
             Debug.Log("Pressed wrong button");
         }
     }
@@ -73,5 +76,11 @@ public class CustomButton : MonoBehaviour {
             StartCoroutine(resetColor());
             Debug.Log("Done!");
         }
+    }
+
+    public void feedbackForFailure(){
+        mat.color = Color.black;
+        StartCoroutine(resetColor());
+        Debug.Log("Failed!");
     }
 }

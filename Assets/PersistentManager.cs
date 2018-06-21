@@ -17,6 +17,11 @@ public class PersistentManager : MonoBehaviour {
     //2 entspricht geschafft
      private int lastProcedureStep = 0;
 
+    //Fehler und maximal erlaubte Fehler
+     private int strikes = 0;
+
+     private int maxStrikes = 3;
+
     private void Awake()
     {
         if (Instance == null)
@@ -49,6 +54,14 @@ public class PersistentManager : MonoBehaviour {
         }
 		return returnValue;
 	}
+
+    public bool isProcedureFailed(){
+        strikes++;
+        if(strikes >= maxStrikes){
+            return true;
+        }
+        return false;
+    }
 
     public void setProceduretarget(int initTarget)
 	{
