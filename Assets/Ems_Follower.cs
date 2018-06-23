@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ems_follower : MonoBehaviour {
+public class Ems_Follower : MonoBehaviour {
 	public Transform player;
 	public float followSharpness = 0.05f;
 
