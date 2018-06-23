@@ -16,6 +16,13 @@ public class CustomButton : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (PersistentManager.Instance.isStepValid(name)){
+			ems_handler.CheckEMS_rightButton(transform.position);	
+		}
+		
+		else{
+			ems_handler.CheckEMS_wrongButton(transform.position);
+		}
 		
 	}
 	
