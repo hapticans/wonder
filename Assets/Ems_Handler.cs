@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 
-public class ems_handler : MonoBehaviour {
+public class Ems_Handler : MonoBehaviour {
 
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
