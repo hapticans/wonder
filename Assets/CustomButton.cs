@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomButton : MonoBehaviour {
-
+	
+	public Ems_Handler ems_handler;
+	
 	private Material mat;
-
+	
 	private Color prevColor;
 
 	// Use this for initialization
