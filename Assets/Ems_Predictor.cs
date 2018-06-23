@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ems_predictor : MonoBehaviour {
+public class Ems_Predictor : MonoBehaviour {
 	public Transform player;
 	public Transform ems_follower;
 	private float predictionMultiplier = 2.0f;
