@@ -57,7 +57,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void StartEMS(int c)
 	{
-		Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T"+Time); //TODO: remove Debug.Log
+		Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T"+Time); 
 	}
 
 	public void Ems_SendMessage(string message)
@@ -75,7 +75,7 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.25f);
 			if(ems_live && ems_LastIntensity != ems_Intensity){
 				StartEMS(1);
 				ems_LastIntensity = ems_Intensity;
