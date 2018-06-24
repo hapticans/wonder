@@ -12,20 +12,21 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
 
-
+	// TODO: Set private where appropriate
   // EMS related variables, derived from Samuel Navas' code; TODO: Check if used properly
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
   public int channel = 1;
   public int ems_Intensity;
+	public int ems_LastIntensity;
   public int Time = 250; // TODO: Check if Time should be modified during actuation
 
 
 	// Config stuff
-	public bool debug_mode = false; // set to GUI output
-	public bool ems_live  = true;  // activate EMS
-	public float ems_triggerDistance = 3.0f; // TODO: Test for a proper value
+	public bool debug_mode; // set to GUI output
+	public bool ems_live;  // activate EMS
+	public float ems_triggerDistance = 0.5f; // TODO: Test for a proper value
 
 	// Initialize with large value TODO: Solve properly, and also the post-frame reset in LateUpdate
 	public float ems_lowestDistance = 10000.0f;
@@ -61,7 +62,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void Ems_SendMessage(string message)
 	{
-		// Debug.Log("UDP: " + message);
+		Debug.Log("UDP: " + message);
 		var client = new UdpClient();
 		var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
 		client.Connect(ep);
@@ -105,11 +106,13 @@ public class Ems_Handler : MonoBehaviour {
 
 		// EMS Activation
 
-
+		if(ems_live || ems_LastIntensity != ems_Intensity){
 			StartEMS(1);
+			ems_LastIntensity = ems_Intensity;
+		}
 
 		// TODO: Solve after-frame reset in a proper way
-	  ems_lowestDistance = 10000.0f;
+	  	ems_lowestDistance = 10000.0f;
 		ems_lowestDistance_right = 10000.0f;
 
 	}
