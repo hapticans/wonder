@@ -29,8 +29,6 @@ public class Sequence : SequenceElement
 
     public bool checkIfCorrect(String name)
     {
-        //Debug.Log(elements.Length);
-        //Debug.Log("Returncounter" + returncounter);
         // Sequenz abgearbeitet
         if (counterReached()) { Debug.LogError("Already Done!"); return false; }
         bool returnValue = false;

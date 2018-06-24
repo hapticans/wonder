@@ -61,7 +61,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void Ems_SendMessage(string message)
 	{
-		Debug.Log("UDP: " + message);
+		// Debug.Log("UDP: " + message);
 		var client = new UdpClient();
 		var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
 		client.Connect(ep);
