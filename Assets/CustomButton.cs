@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CustomButton : MonoBehaviour {
 
+	public Ems_Handler ems_handler;
+	
 	private Material mat;
 
 	private Color prevColor;
@@ -37,6 +39,7 @@ public class CustomButton : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		//handleEMS();	// Deactivated for now
 		Debug.Log(buttonCollider.bounds.size);
 		if (buttonCollider.bounds.Intersects (controllerCollider.bounds)) {
 			if (!istriggering) {
@@ -88,6 +91,15 @@ public class CustomButton : MonoBehaviour {
     {
         yield return new WaitForSeconds(1);
 		GetComponent<Renderer>().material.color = prevColor;
+    }
+	
+    void handleEMS(){
+    	if (PersistentManager.Instance.isStepValid(name)){
+		ems_handler.CheckEMS_rightButton(transform.position);	
+	}	
+	else{
+		ems_handler.CheckEMS_wrongButton(transform.position);
+	}
     }
 	
     //false entspricht alles geschafft
