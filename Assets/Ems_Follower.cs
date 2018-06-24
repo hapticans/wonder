@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ems_Follower : MonoBehaviour {
 	public Transform player;
-	public float followSharpness = 0.05f;
+	public float followSharpness = 0.15f;
 
 	// Use this for initialization
 	void Start () {
