@@ -12,15 +12,13 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
 
-	// TODO: Set private where appropriate
-  // EMS related variables, derived from Samuel Navas' code; TODO: Check if used properly
+  // EMS related variables
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
   private int channel = 1;
   public int ems_Intensity;
-	public int ems_LastIntensity;
-  private int Time = 250; // TODO: Check if Time should be modified during actuation
+  private int Time = 250; 
 
 
 	// Config stuff
@@ -75,14 +73,11 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
-			yield return new WaitForSeconds(0.25f);
-			if(ems_live && ems_LastIntensity != ems_Intensity){
+			yield return new WaitForSeconds(((float)(Time)) / 1000);
+			if(ems_live && ems_Intensity != 0 ){
 				StartEMS(1);
-				ems_LastIntensity = ems_Intensity;
 			}
-
 		}
-
 	}
 
 	// Update is called once per frame
