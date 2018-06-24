@@ -17,20 +17,20 @@ public class Ems_Handler : MonoBehaviour {
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
-  public int channel = 1;
+  private int channel = 1;
   public int ems_Intensity;
 	public int ems_LastIntensity;
-  public int Time = 250; // TODO: Check if Time should be modified during actuation
+  private int Time = 250; // TODO: Check if Time should be modified during actuation
 
 
 	// Config stuff
 	public bool debug_mode; // set to GUI output
 	public bool ems_live;  // activate EMS
-	public float ems_triggerDistance = 0.5f; // TODO: Test for a proper value
+	public float ems_triggerDistance = 1.0f; // TODO: Test for a proper value
 
 	// Initialize with large value TODO: Solve properly, and also the post-frame reset in LateUpdate
-	public float ems_lowestDistance = 10000.0f;
-	public float ems_lowestDistance_right = 10000.0f;
+	private float ems_lowestDistance = 10000.0f;
+	private float ems_lowestDistance_right = 10000.0f;
 
 
 	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
@@ -90,18 +90,19 @@ public class Ems_Handler : MonoBehaviour {
 
 	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
 	void LateUpdate(){
-		float ems_currentActivationLevel = 60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40;
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10); // TODO: Check if 600 - 1000 (60 % - 100 %) is really the right actuation range
 
-		if(ems_currentActivationLevel > 100 || ems_lowestDistance < ems_triggerDistance/8){
-				ems_currentActivationLevel = 100;
+
+		if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
+
+				ems_Intensity = 1000;
 		}
 
-		if(ems_currentActivationLevel < 60 || ems_lowestDistance_right < ems_lowestDistance){
+		if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
 
-				ems_currentActivationLevel = 0;
+				ems_Intensity = 0;
 		}
 
-			ems_Intensity = (int) System.Math.Ceiling(ems_currentActivationLevel) * 10; // TODO: Check if 600 - 1000 (60 % - 100 %) is really the right actuation range
 
 
 		// EMS Activation
@@ -112,7 +113,7 @@ public class Ems_Handler : MonoBehaviour {
 		}
 
 		// TODO: Solve after-frame reset in a proper way
-	  	ems_lowestDistance = 10000.0f;
+	  ems_lowestDistance = 10000.0f;
 		ems_lowestDistance_right = 10000.0f;
 
 	}
