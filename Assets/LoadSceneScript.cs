@@ -114,11 +114,12 @@ public class LoadSceneScript : MonoBehaviour
         // Save as Array
 		String[] semicolonArray = input.Split(';');
         sequenceArray = new String[semicolonArray.Length];
-
+		
+		
 		// Create Dictionary
         sequenceDictionary = new Dictionary<string, string>();
         for (int i = 0; i < semicolonArray.GetLength(0)-1; i++)
-		{
+		{		Debug.LogError(semicolonArray[i]);
 			String[] doubledotSplit = semicolonArray[i].Split(':');
             // Copy Value to Sequence Array - discard sequence name
 			sequenceArray[i] = doubledotSplit[1];
