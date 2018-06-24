@@ -12,12 +12,11 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
 
-	// TODO: Set private where appropriate
-  // EMS related variables, derived from Samuel Navas' code; TODO: Check if used properly
+	
+  // EMS related variables
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
-  private int channel = 1;
   public int ems_Intensity;
 	public int ems_LastIntensity;
   private int Time = 250; // TODO: Check if Time should be modified during actuation
