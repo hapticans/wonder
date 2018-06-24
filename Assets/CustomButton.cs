@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomButton : MonoBehaviour {
-
+	
+	public Ems_Handler ems_handler;
+	
 	private Material mat;
-
+	
 	private Color prevColor;
 
 	// Use this for initialization
@@ -16,6 +18,13 @@ public class CustomButton : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (PersistentManager.Instance.isStepValid(name)){
+			ems_handler.CheckEMS_rightButton(transform.position);	
+		}
+		
+		else{
+			ems_handler.CheckEMS_wrongButton(transform.position);
+		}
 		
 	}
 	
