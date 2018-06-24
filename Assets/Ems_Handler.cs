@@ -12,11 +12,12 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
 
-	
-  // EMS related variables
+	// TODO: Set private where appropriate
+  // EMS related variables, derived from Samuel Navas' code; TODO: Check if used properly
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
+  private int channel = 1;
   public int ems_Intensity;
 	public int ems_LastIntensity;
   private int Time = 250; // TODO: Check if Time should be modified during actuation
@@ -71,8 +72,16 @@ public class Ems_Handler : MonoBehaviour {
 
 
 
-	// Use this for initialization
-	void Start () {
+	// EMS Activation
+	IEnumerator Start () {
+		while(true){
+			yield return new WaitForSeconds(0.2f);
+			if(ems_live && ems_LastIntensity != ems_Intensity){
+				StartEMS(1);
+				ems_LastIntensity = ems_Intensity;
+			}
+
+		}
 
 	}
 
@@ -89,27 +98,19 @@ public class Ems_Handler : MonoBehaviour {
 
 	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
 	void LateUpdate(){
+
 		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10); // TODO: Check if 600 - 1000 (60 % - 100 %) is really the right actuation range
 
-
 		if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
-
 				ems_Intensity = 1000;
 		}
 
 		if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
-
 				ems_Intensity = 0;
 		}
 
 
 
-		// EMS Activation
-
-		if(ems_live || ems_LastIntensity != ems_Intensity){
-			StartEMS(1);
-			ems_LastIntensity = ems_Intensity;
-		}
 
 		// TODO: Solve after-frame reset in a proper way
 	  ems_lowestDistance = 10000.0f;
