@@ -5,7 +5,7 @@ using UnityEngine;
 public class Ems_Predictor : MonoBehaviour {
 	public Transform player;
 	public Transform ems_follower;
-	private float predictionMultiplier = 2.0f;
+	public float predictionMultiplier = 2.0f;
 
 	// Use this for initialization
 	void Start () {
