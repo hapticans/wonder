@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CustomButton : MonoBehaviour {
 
@@ -13,19 +14,30 @@ public class CustomButton : MonoBehaviour {
 	private bool istriggering;
 	
 	public GameObject controller;
-	
-	Renderer buttonCollider;
-	Collider controllerCollider;
 
-	// Use this for initialization
-	void Start () {
+    Collider buttonCollider1;
+
+    Collider buttonCollider2;
+
+    Collider controllerCollider;
+
+    int failureCount;
+
+    String basis = "OutputLED_";
+
+    // Use this for initialization
+    void Start () {
 		mat = GetComponent<Renderer>().material;
         prevColor = mat.color;
-		
-		controllerCollider = controller.GetComponent<Collider>();
-		buttonCollider = GetComponent<Renderer>();
-	}
+        
+        controllerCollider = controller.GetComponent<Collider>();
 
+        buttonCollider1 = GameObject.Find(name.Remove(name.Length - 6) + "Cube1").GetComponent<Collider>();
+        buttonCollider2 = GameObject.Find(name.Remove(name.Length - 6) + "Cube2").GetComponent<Collider>();
+
+    }
+
+    /*
 	void OnDrawGizmos(){
 		List<Vector3> copyOfVerts = new List<Vector3>();
 		GetComponent<MeshFilter>().mesh.GetVertices(copyOfVerts);
@@ -35,21 +47,23 @@ public class CustomButton : MonoBehaviour {
 			Gizmos.DrawSphere(array[i], 0.001f);
 		}
 	}
+    */
 
 	
 	// Update is called once per frame
 	void Update () {
 		//handleEMS();	// Deactivated for now
-		Debug.Log(buttonCollider.bounds.size);
-		if (buttonCollider.bounds.Intersects (controllerCollider.bounds)) {
+
+		if (buttonCollider1.bounds.Intersects (controllerCollider.bounds) || buttonCollider2.bounds.Intersects(controllerCollider.bounds)) {
 			if (!istriggering) {
 				istriggering = true;
 				checkButton();
-			}
+                StartCoroutine("waitOneSecond");
+            }
 		} else {
 			istriggering = false;
-			waitOneSecond();
-		}
+            StartCoroutine("waitOneSecond");
+        }
 	}
 
     public void checkButton()
@@ -122,7 +136,11 @@ public class CustomButton : MonoBehaviour {
 
     public void feedbackForFailure(){
 		Application.Quit();
-        mat.color = Color.black;
+        //mat.color = Color.black;
+
+        failureCount++;
+        GameObject.Find(basis + failureCount).GetComponent<Renderer>().material.color = Color.red;
+        
         StartCoroutine(resetColor());
         Debug.Log("Failed!");
     }
