@@ -17,8 +17,6 @@ public class DevCam : MonoBehaviour
 	public float cameraSensitivity = 90;
 	public float climbSpeed = 4;
 	public float normalMoveSpeed = 10;
-	public float slowMoveFactor = 0.25f;
-	public float fastMoveFactor = 3;
 
 	private float rotationX = 0.0f;
 	private float rotationY = 0.0f;
