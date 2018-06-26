@@ -85,4 +85,9 @@ public class PersistentManager : MonoBehaviour {
         print(procedure);
         print(procedure.counterReached());
     }
+
+    public int getStrikes()
+    {
+        return strikes;
+    }
 }

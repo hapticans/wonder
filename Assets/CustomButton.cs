@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 
 public class CustomButton : MonoBehaviour {
@@ -20,8 +21,6 @@ public class CustomButton : MonoBehaviour {
     Collider buttonCollider2;
 
     Collider controllerCollider;
-
-    int failureCount;
 
     String basis = "OutputLED_";
 
@@ -136,11 +135,10 @@ public class CustomButton : MonoBehaviour {
 
     public void feedbackForFailure(){
 		Application.Quit();
-        //mat.color = Color.black;
-
-        failureCount++;
-        GameObject.Find(basis + failureCount).GetComponent<Renderer>().material.color = Color.red;
-        
+        mat.color = Color.black;
+        // SceneManager.UnloadSceneAsync("Scene");
+        //Debug.Log(basis + (PersistentManager.Instance.getStrikes() + 1));
+        Destroy(GameObject.Find("[CameraRig]"));
         StartCoroutine(resetColor());
         Debug.Log("Failed!");
     }
