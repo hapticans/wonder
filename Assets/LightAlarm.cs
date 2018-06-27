@@ -20,6 +20,12 @@ public class LightAlarm : MonoBehaviour {
         StartCoroutine("redAlarm");
     }
 
+	public void StopAlarm()
+	{
+		StopCoroutine ("redalarm");
+	}
+
+
     IEnumerator redAlarm()
     {
         while (true)

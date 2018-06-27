@@ -127,12 +127,27 @@ public class CustomButton : MonoBehaviour {
             mat.color = Color.white;
 			prevColor = Color.white;
             StartCoroutine(resetColor());
-            Debug.Log("Zwischenschritt!");
+            //Debug.Log("Zwischenschritt!");
         }else{
             mat.color = Color.blue;
 			prevColor = Color.blue;
             StartCoroutine(resetColor());
-            Debug.Log("Done!");
+            //Debug.Log("Done!");
+
+			// Disable Light Alarm
+			LightAlarm light1 = (LightAlarm)GameObject.Find("AlarmLight1").GetComponent(typeof(LightAlarm));
+			light1.StopAlarm();
+
+			LightAlarm light2 = (LightAlarm)GameObject.Find("AlarmLight3").GetComponent(typeof(LightAlarm));
+			light2.StopAlarm();
+
+			LightAlarm light3 = (LightAlarm)GameObject.Find("AlarmLight2").GetComponent(typeof(LightAlarm));
+			light3.StopAlarm();
+
+			// Disable Audio Alarm
+			GameObject.Find("LeftSpeaker").GetComponent<AudioSource>().Stop();
+			GameObject.Find("RightSpeaker").GetComponent<AudioSource>().Stop();
+
         }
     }
 
@@ -142,6 +157,7 @@ public class CustomButton : MonoBehaviour {
         // SceneManager.UnloadSceneAsync("Scene");
         //Debug.Log(basis + (PersistentManager.Instance.getStrikes() + 1));
         // Destroy(GameObject.Find("[CameraRig]"));
+
         StartCoroutine(resetColor());
         Debug.Log("Failed!");
     }
