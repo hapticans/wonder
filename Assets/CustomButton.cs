@@ -52,22 +52,25 @@ public class CustomButton : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//handleEMS();	// Deactivated for now
+		// Debug.Log(istriggering);
+		Debug.Log (istriggering);
 
 		if (buttonCollider1.bounds.Intersects (controllerCollider.bounds) || buttonCollider2.bounds.Intersects(controllerCollider.bounds)) {
 			if (!istriggering) {
 				istriggering = true;
 				checkButton();
-                StartCoroutine("waitOneSecond");
             }
 		} else {
-			istriggering = false;
-            StartCoroutine("waitOneSecond");
+			if (istriggering) {
+				Debug.Log (istriggering);
+				istriggering = false;
+			}
         }
 	}
 
     public void checkButton()
     {
-        if (PersistentManager.Instance.isStepValid(name))
+		if (PersistentManager.Instance.markIfValidStep(name))
         {
             mat.color = Color.green;
             prevColor = Color.green;
@@ -138,7 +141,7 @@ public class CustomButton : MonoBehaviour {
         mat.color = Color.black;
         // SceneManager.UnloadSceneAsync("Scene");
         //Debug.Log(basis + (PersistentManager.Instance.getStrikes() + 1));
-        Destroy(GameObject.Find("[CameraRig]"));
+        // Destroy(GameObject.Find("[CameraRig]"));
         StartCoroutine(resetColor());
         Debug.Log("Failed!");
     }

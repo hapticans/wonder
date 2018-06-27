@@ -36,7 +36,12 @@ public class PersistentManager : MonoBehaviour {
 
 	public bool isStepValid(string name)
 	{
-		return procedure.checkIfCorrect(name);
+		return procedure.checkIfCorrect(name, false);
+	}
+
+	public bool markIfValidStep(string name)
+	{
+		return procedure.checkIfCorrect(name, true);
 	}
 
     public int isProcedureDone(bool sqeunceJustDone)

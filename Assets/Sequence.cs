@@ -27,7 +27,7 @@ public class Sequence : SequenceElement
         PersistentManager.Instance.setProceduretarget(counter);
     }
 
-    public bool checkIfCorrect(String name)
+	public bool checkIfCorrect(String name, bool markAsDone)
     {
         // Sequenz abgearbeitet
         if (counterReached()) { Debug.LogError("Already Done!"); return false; }
@@ -40,12 +40,13 @@ public class Sequence : SequenceElement
                 // Increment runner to check next element
                 runner++;
             }
-            returnValue = elements[runner].checkIfCorrect(name);
+
+			returnValue = elements[runner].checkIfCorrect(name, markAsDone);
         } else
         if(!order){
             for (int i = 0; i < elements.GetLength(0); i++)
             {
-                returnValue = elements[i].checkIfCorrect(name);
+					returnValue = elements[i].checkIfCorrect(name, markAsDone);
                 
                 // Already found fitting Element
                 if (returnValue)

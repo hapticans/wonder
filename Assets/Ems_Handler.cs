@@ -85,7 +85,7 @@ public class Ems_Handler : MonoBehaviour {
 		// Emergency Stop when pressing "End"
 		if (Input.GetKey (KeyCode.End)) {
 			ems_live = false;
-			Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T1");
+			// Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T1");
 			//Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T0001");
 		}
 

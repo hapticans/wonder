@@ -13,20 +13,20 @@ public class InputElement : SequenceElement
         this.name = name;
     }
 
-    public bool checkIfCorrect(String input)
+	public bool checkIfCorrect(String input, bool markAsDone)
     {
-        //Debug.Log("Checking Element" + this.name + " against" + input);
-        // Element bereits aktiviert
-        if (counter) { return false; }
-        
-        if (name == input)
-        {
-            counter = true;
-            return true;
-        }
-        return false;
+		// Element bereits aktiviert
+		if (counter) { return false; }
+
+		if (name == input)
+		{
+			if (markAsDone) {
+				counter = true;
+			}
+			return true;
+		}
+		return false;
     }
-    
     
     public bool counterReached()
     {
