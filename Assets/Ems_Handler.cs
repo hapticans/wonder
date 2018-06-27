@@ -18,7 +18,8 @@ public class Ems_Handler : MonoBehaviour {
   private static int Port = 5005;
   private int channel = 1;
   public int ems_Intensity;
-  private int Time = 250; 
+	public int ems_mode = 1;
+  private int Time = 250;
 
 
 	// Config stuff
@@ -55,7 +56,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void StartEMS(int c)
 	{
-		Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T"+Time); 
+		Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T"+Time);
 	}
 
 	public void Ems_SendMessage(string message)
@@ -75,7 +76,7 @@ public class Ems_Handler : MonoBehaviour {
 		while(true){
 			yield return new WaitForSeconds(((float)(Time)) / 1000);
 			if(ems_live && ems_Intensity != 0 ){
-				StartEMS(1);
+				StartEMS(channel);
 			}
 		}
 	}
@@ -85,7 +86,7 @@ public class Ems_Handler : MonoBehaviour {
 		// Emergency Stop when pressing "End"
 		if (Input.GetKey (KeyCode.End)) {
 			ems_live = false;
-			// Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T1");
+			Ems_SendMessage(EmsModule+"C"+channel+"I"+0+"T1");
 			//Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T0001");
 		}
 
@@ -97,21 +98,23 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
-	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
-	void LateUpdate(){
-
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10); // TODO: Check if 600 - 1000 (60 % - 100 %) is really the right actuation range
-
+	void EmsStyle_1(){ // simple first linear approach, small deadzone
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10);
 		if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
 				ems_Intensity = 1000;
 		}
-
-		if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
+		else if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
 				ems_Intensity = 0;
 		}
+	}
 
-
-
+	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
+	void LateUpdate(){
+		switch(ems_mode){
+			case 1:
+				EmsStyle_1();
+				break;
+		}
 
 		// TODO: Solve after-frame reset in a proper way
 	  ems_lowestDistance = 10000.0f;
