@@ -25,7 +25,7 @@ public class Ems_Handler : MonoBehaviour {
 	// Config stuff
 	public bool debug_mode; // set to GUI output
 	public bool ems_live;  // activate EMS
-	public float ems_triggerDistance = 1.0f; // TODO: Test for a proper value
+	public float ems_triggerDistance = 0.3f; // TODO: Test for a proper value
 
 	// Initialize with large value TODO: Solve properly, and also the post-frame reset in LateUpdate
 	private float ems_lowestDistance = 10000.0f;
@@ -100,11 +100,33 @@ public class Ems_Handler : MonoBehaviour {
 
 	void EmsStyle_1(){ // simple first linear approach, small deadzone
 		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10);
-		if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
-				ems_Intensity = 1000;
+
+		if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
+			ems_Intensity = 0;
 		}
-		else if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
-				ems_Intensity = 0;
+		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
+			ems_Intensity = 1000;
+		}
+
+	}
+
+	void EmsStyle_2(){ // harsher actuation, but larger deadzone around the right button
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowestDistance / (ems_triggerDistance*0.8f)) * 40) * 10);
+		if(ems_Intensity < 600 || ems_lowestDistance_right < (ems_lowestDistance*1.2f)){
+			ems_Intensity = 0;
+		}
+
+		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/4){
+			ems_Intensity = 1000;
+		}
+	}
+
+	void EmsStyle_3(){	// binary, but even larger deadzone. lower triggerdistance
+		if(ems_lowestDistance_right < (ems_lowestDistance*1.3f) || ems_lowestDistance > ems_triggerDistance*0.75f){
+			ems_Intensity = 0;
+		}
+		else{
+			ems_Intensity = 1000;
 		}
 	}
 
@@ -113,6 +135,12 @@ public class Ems_Handler : MonoBehaviour {
 		switch(ems_mode){
 			case 1:
 				EmsStyle_1();
+				break;
+			case 2:
+				EmsStyle_2();
+				break;
+			case 3:
+				EmsStyle_3();
 				break;
 		}
 
