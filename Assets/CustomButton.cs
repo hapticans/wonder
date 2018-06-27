@@ -73,7 +73,6 @@ public class CustomButton : MonoBehaviour {
 		if (PersistentManager.Instance.markIfValidStep(name))
         {
             mat.color = Color.green;
-            prevColor = Color.green;
             
 			Debug.Log("Pressed Correct Button");
             
@@ -125,12 +124,10 @@ public class CustomButton : MonoBehaviour {
         if(zwischenschritt)
         {
             mat.color = Color.white;
-			prevColor = Color.white;
             StartCoroutine(resetColor());
             //Debug.Log("Zwischenschritt!");
         }else{
             mat.color = Color.blue;
-			prevColor = Color.blue;
             StartCoroutine(resetColor());
             //Debug.Log("Done!");
 
