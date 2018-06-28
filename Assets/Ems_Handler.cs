@@ -27,7 +27,7 @@ public class Ems_Handler : MonoBehaviour {
 	public bool ems_live;  // activate EMS
 	public float ems_triggerDistance = 0.3f;
 
-	// Initialize with large value 
+	// Initialize with large value
 	private float ems_lowestDistance = 10000.0f;
 	private float ems_lowestDistance_right = 10000.0f;
 
@@ -51,9 +51,9 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
-	public void StartEMS(int c)
+	public void StartEMS(int startchannel, int startintensity, int starttime)
 	{
-		Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T"+Time);
+		Ems_SendMessage(EmsModule+"C"+startchannel+"I"+startintensity+"T"+starttime);
 	}
 
 	public void Ems_SendMessage(string message)
@@ -67,13 +67,12 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 
-
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
 			yield return new WaitForSeconds(((float)(Time)) / 1000);
 			if(ems_live && ems_Intensity != 0 ){
-				StartEMS(channel);
+				StartEMS(channel, ems_Intensity, Time);
 			}
 		}
 	}
@@ -81,10 +80,17 @@ public class Ems_Handler : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// Emergency Stop when pressing "End"
-		if (Input.GetKey (KeyCode.End)) {
+		if (Input.GetKeyDown (KeyCode.End)) {
 			ems_live = false;
 			Ems_SendMessage(EmsModule+"C"+channel+"I"+0+"T1");
 			//Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T0001");
+		}
+		if (Input.GetKeyDown (KeyCode.Insert)){		// TODO: "final calibration test", cycle through ems intensity 600, 700, 800, 900, 1000 and back, .25 seconds each
+			//Ems_SendMessage(EmsModule+"C"+channel+"I600T"+Time);
+
+			//Invoke((Ems_SendMessage(EmsModule+"C"+channel+"I700T"+Time)), 0.25f);
+
+
 		}
 	}
 
