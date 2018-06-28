@@ -16,18 +16,18 @@ public class Ems_Handler : MonoBehaviour {
 	public string EmsModule = "EMS09RH";
   private static string Server = "192.168.43.1";
   private static int Port = 5005;
-  private int channel = 1;
-  public int ems_Intensity;
-	public int ems_mode = 1;
-  private int Time = 250;
+	private int channel = 1;
+	public int ems_Intensity;
+	public int ems_mode = 2;
+	private int Time = 250;
 
 
 	// Config stuff
 	public bool debug_mode; // set to GUI output
 	public bool ems_live;  // activate EMS
-	public float ems_triggerDistance = 0.3f; // TODO: Test for a proper value
+	public float ems_triggerDistance = 0.3f;
 
-	// Initialize with large value TODO: Solve properly, and also the post-frame reset in LateUpdate
+	// Initialize with large value 
 	private float ems_lowestDistance = 10000.0f;
 	private float ems_lowestDistance_right = 10000.0f;
 
@@ -40,10 +40,8 @@ public class Ems_Handler : MonoBehaviour {
 		if(ems_lowestDistance > distance_min){
 			ems_lowestDistance = distance_min;
 		}
-
 	}
 	// to be called by right buttons during their update, in order to check their position for EMS relevance
-	// TODO: Check what happens with buttons that were already correctly pressed
 	public void CheckEMS_rightButton(Vector3 button_position){
 
 		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
@@ -51,7 +49,6 @@ public class Ems_Handler : MonoBehaviour {
 		if(ems_lowestDistance_right > distance_min){
 			ems_lowestDistance_right = distance_min;
 		}
-
 	}
 
 	public void StartEMS(int c)
@@ -89,7 +86,6 @@ public class Ems_Handler : MonoBehaviour {
 			Ems_SendMessage(EmsModule+"C"+channel+"I"+0+"T1");
 			//Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T0001");
 		}
-
 	}
 
 	void OnGUI(){
@@ -107,7 +103,6 @@ public class Ems_Handler : MonoBehaviour {
 		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
 			ems_Intensity = 1000;
 		}
-
 	}
 
 	void EmsStyle_2(){ // harsher actuation, but larger deadzone around the right button
@@ -147,7 +142,5 @@ public class Ems_Handler : MonoBehaviour {
 		// TODO: Solve after-frame reset in a proper way
 	  ems_lowestDistance = 10000.0f;
 		ems_lowestDistance_right = 10000.0f;
-
 	}
-
 }
