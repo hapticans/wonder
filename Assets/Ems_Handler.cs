@@ -20,6 +20,7 @@ public class Ems_Handler : MonoBehaviour {
 	public int ems_Intensity;
 	public int ems_mode = 2;
 	private int Time = 250;
+	private bool emstest_running = false;
 
 
 	// Config stuff
@@ -66,6 +67,30 @@ public class Ems_Handler : MonoBehaviour {
 		client.Send(data, data.Length);
 	}
 
+	// Calibration run, cycling through 60% - 100% - 60% EMS
+	private IEnumerator EmsTest(){
+		emstest_running = true;
+		yield return new WaitForSeconds(1.0f);
+		StartEMS(channel, 600, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 700, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 800, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 900, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 1000, 1000);
+		yield return new WaitForSeconds(1.0f);
+		StartEMS(channel, 900, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 800, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 700, 500);
+		yield return new WaitForSeconds(0.5f);
+		StartEMS(channel, 600, 500);
+		emstest_running = false;
+	}
+
 
 	// EMS Activation
 	IEnumerator Start () {
@@ -77,20 +102,14 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
 	void Update () {
-		// Emergency Stop when pressing "End"
-		if (Input.GetKeyDown (KeyCode.End)) {
+
+		if (Input.GetKeyDown (KeyCode.End)) {		// Key Event for Emergency Stop when pressing "End"
 			ems_live = false;
-			Ems_SendMessage(EmsModule+"C"+channel+"I"+0+"T1");
-			//Ems_SendMessage(EmsModule+"C"+c+"I"+ems_Intensity+"T0001");
+			StartEMS(channel, 0, 1);
 		}
-		if (Input.GetKeyDown (KeyCode.Insert)){		// TODO: "final calibration test", cycle through ems intensity 600, 700, 800, 900, 1000 and back, .25 seconds each
-			//Ems_SendMessage(EmsModule+"C"+channel+"I600T"+Time);
-
-			//Invoke((Ems_SendMessage(EmsModule+"C"+channel+"I700T"+Time)), 0.25f);
-
-
+		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running){ // Key Event for Calibration run when pressing "Insert"
+			StartCoroutine(EmsTest());
 		}
 	}
 
