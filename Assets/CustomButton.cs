@@ -5,15 +5,25 @@ using UnityEngine.SceneManagement;
 using System;
 
 public class CustomButton : MonoBehaviour {
-
+	// EMS - related
 	public Ems_Handler ems_handler;
-	
+	// Button Animation related
+	public float returnSpeed = 10.0f;
+	public float activationDistance = 0.5f;
+	private bool pressed = false;
+	private bool released = false;
+	private Vector3 startPosition;
+
+
+
 	private Material mat;
 
 	private Color prevColor;
-	
+
+	private Vector3 originalPosition;
+
 	private bool istriggering;
-	
+
 	public GameObject controller;
 
     Collider buttonCollider1;
@@ -26,13 +36,14 @@ public class CustomButton : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+		startPosition = transform.localPosition; // Reset position for Button Animation
 		mat = GetComponent<Renderer>().material;
-        prevColor = mat.color;
-        
-        controllerCollider = controller.GetComponent<Collider>();
+    prevColor = mat.color;
+		originalPosition = transform.position;
+    controllerCollider = controller.GetComponent<Collider>();
 
-        buttonCollider1 = GameObject.Find(name.Remove(name.Length - 6) + "Cube1").GetComponent<Collider>();
-        buttonCollider2 = GameObject.Find(name.Remove(name.Length - 6) + "Cube2").GetComponent<Collider>();
+    buttonCollider1 = GameObject.Find(name.Remove(name.Length - 6) + "Cube1").GetComponent<Collider>();
+    buttonCollider2 = GameObject.Find(name.Remove(name.Length - 6) + "Cube2").GetComponent<Collider>();
 
     }
 
@@ -48,24 +59,16 @@ public class CustomButton : MonoBehaviour {
 	}
     */
 
-	
+
 	// Update is called once per frame
 	void Update () {
-		//handleEMS();	// Deactivated for now
-		// Debug.Log(istriggering);
-		Debug.Log (istriggering);
 
-		if (buttonCollider1.bounds.Intersects (controllerCollider.bounds) || buttonCollider2.bounds.Intersects(controllerCollider.bounds)) {
-			if (!istriggering) {
-				istriggering = true;
-				checkButton();
-            }
-		} else {
-			if (istriggering) {
-				Debug.Log (istriggering);
-				istriggering = false;
-			}
-        }
+		handleEMS();
+		AnimatedButtonUpdate();  //TODO: Deactivate Cube1/Cube2 Colliders, Add RigidBody and Box Collider to all Buttons, then set all their Mass to 20, Drag to 100, and uncheck "Use Gravity"
+		//ColliderInteraction();		// The old solution
+		// Debug.Log(istriggering);
+
+
 	}
 
     public void checkButton()
@@ -73,9 +76,9 @@ public class CustomButton : MonoBehaviour {
 		if (PersistentManager.Instance.markIfValidStep(name))
         {
             mat.color = Color.green;
-            
+
 			Debug.Log("Pressed Correct Button");
-            
+
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
             if(lastProcedureStep == 1)
             {
@@ -107,16 +110,71 @@ public class CustomButton : MonoBehaviour {
         yield return new WaitForSeconds(1);
 		GetComponent<Renderer>().material.color = prevColor;
     }
-	
+
     void handleEMS(){
     	if (PersistentManager.Instance.isStepValid(name)){
-		ems_handler.CheckEMS_rightButton(transform.position);	
-	}	
-	else{
-		ems_handler.CheckEMS_wrongButton(transform.position);
-	}
+				ems_handler.CheckEMS_rightButton(transform.position);
+			}
+			else{
+				ems_handler.CheckEMS_wrongButton(transform.position);
+			}
     }
-	
+
+		void ColliderInteraction(){
+			if (buttonCollider1.bounds.Intersects (controllerCollider.bounds) || buttonCollider2.bounds.Intersects(controllerCollider.bounds)) {
+				if (!istriggering) {
+					istriggering = true;
+					checkButton();
+	    	}
+			}
+			else
+			{
+				if (istriggering)
+				{
+					Debug.Log (istriggering);
+					istriggering = false;
+				}
+	  	}
+		}
+
+		void AnimatedButtonUpdate(){
+			released = false;
+			float distance;
+
+			Vector3 localPos = transform.localPosition;
+			localPos.x = startPosition.x;
+			localPos.z = startPosition.z;
+			//localPos.y = Mathf.Clamp(localPos.y, -0.4f, 0f);
+
+			transform.localPosition = localPos;
+
+			// Move back to startPosition if not obstructed
+			transform.localPosition = Vector3.Lerp(transform.localPosition, startPosition, Time.deltaTime * returnSpeed);
+
+			// trigger distance calculation
+			Vector3 xyzdistance = transform.localPosition - startPosition;
+			distance = Math.Abs(xyzdistance.y);
+
+
+			float pressComplete = Mathf.Clamp(1 / activationDistance * distance, 0f, 1f);
+
+			//Activate when pressed
+			if (pressComplete >= 0.025f && !pressed && !released)
+			{
+					// TODO: Insert Triggered events here
+					pressed = true;
+					Debug.Log("pressed " + localPos.y);
+					checkButton();
+			}
+			//Deactivate when released
+			else if (pressComplete <= 0.01f && pressed)
+			{
+					pressed = false;
+					released = true;
+					Debug.Log("released " + localPos.y);
+			}
+		}
+
     //false entspricht alles geschafft
     //true entspricht Zwischenschritt
     public void feedbackForSucces(bool zwischenschritt)
@@ -126,7 +184,9 @@ public class CustomButton : MonoBehaviour {
             mat.color = Color.white;
             StartCoroutine(resetColor());
             //Debug.Log("Zwischenschritt!");
-        }else{
+        }
+				else
+				{
             mat.color = Color.blue;
             StartCoroutine(resetColor());
             //Debug.Log("Done!");
