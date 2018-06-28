@@ -28,7 +28,7 @@ public class AnimatedButton : MonoBehaviour
       Vector3 localPos = transform.localPosition;
       localPos.x = startPosition.x;
       localPos.z = startPosition.z;
-      localPos.y = Mathf.Clamp(localPos.y, -0.4f, -0.001f);
+      //localPos.y = Mathf.Clamp(localPos.y, -0.4f, -0.001f);
 
       transform.localPosition = localPos;
 
@@ -42,18 +42,19 @@ public class AnimatedButton : MonoBehaviour
 
       float pressComplete = Mathf.Clamp(1 / activationDistance * distance, 0f, 1f);
 
-      //Activate pressed button
+      //Activate when pressed
       if (pressComplete >= 0.02f && !pressed && !released)
       {
+          // TODO: Insert Triggered events here
           pressed = true;
-          Debug.Log("pressed " + localPos.y);
+          //Debug.Log("pressed " + localPos.y);
       }
-      //Dectivate unpressed button
+      //Deactivate when released
       else if (pressComplete <= 0.005f && pressed)
       {
           pressed = false;
           released = true;
-          Debug.Log("released " + localPos.y);
+          //Debug.Log("released " + localPos.y);
       }
     }
 }
