@@ -66,8 +66,8 @@ public class CustomButton : MonoBehaviour {
 		handleEMS();
 		 //TODO: Deactivate Cube1/Cube2 Colliders, Add RigidBody and Box Collider to all Buttons, then set all their Mass to 20, Drag to 100, and uncheck "Use Gravity"
 		 //TODO: For each Button, lock all rotational Axis. Axis movement is restricted in the function.
-		//AnimatedButtonUpdate();
-		ColliderInteraction();		// The old solution
+		AnimatedButtonUpdate();
+		//ColliderInteraction();		// The old solution
 		// Debug.Log(istriggering);
 
 

@@ -24,8 +24,8 @@ public class Ems_Handler : MonoBehaviour {
 
 
 	// Config stuff
-	public bool debug_mode; // set to GUI output
-	public bool ems_live;  // activate EMS
+	public bool debug_mode = true; // set to GUI output
+	public bool ems_live = false;  // activate EMS
 	public float ems_triggerDistance = 0.3f;
 
 	// Initialize with large value
