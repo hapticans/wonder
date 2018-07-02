@@ -14,10 +14,10 @@ public class Ems_Handler : MonoBehaviour {
 
   // EMS related variables
 	public string EmsModule = "EMS09RH";
-  private static string Server = "192.168.43.1";
-  private static int Port = 5005;
-	private int channel = 1;
-	public int ems_Intensity;
+  public string Server = "192.168.43.1";
+  public int Port = 5005;
+	public int channel = 1;
+	private int ems_Intensity;
 	public int ems_mode = 2;
 	private int Time = 250;
 	private bool emstest_running = false;
@@ -26,7 +26,7 @@ public class Ems_Handler : MonoBehaviour {
 	// Config stuff
 	public bool debug_mode = true; // set to GUI output
 	public bool ems_live = false;  // activate EMS
-	public float ems_triggerDistance = 0.3f;
+	public float ems_triggerDistance = 0.2f;
 
 	// Initialize with large value
 	private float ems_lowestDistance = 10000.0f;
@@ -72,21 +72,21 @@ public class Ems_Handler : MonoBehaviour {
 		emstest_running = true;
 		yield return new WaitForSeconds(1.0f);
 		StartEMS(channel, 600, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 700, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 800, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 900, 500);
-		yield return new WaitForSeconds(0.5f);
-		StartEMS(channel, 1000, 1000);
-		yield return new WaitForSeconds(1.0f);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS(channel, 1000, 999);
+		yield return new WaitForSeconds(0.8f);
 		StartEMS(channel, 900, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 800, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 700, 500);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.35f);
 		StartEMS(channel, 600, 500);
 		emstest_running = false;
 	}
@@ -95,7 +95,8 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
-			yield return new WaitForSeconds(((float)(Time)) / 1000);
+			// yield return new WaitForSeconds(0.15f); //Alternative
+			yield return new WaitForSeconds((((float)(Time)) / 1000) - 150);
 			if(ems_live && ems_Intensity != 0 ){
 				StartEMS(channel, ems_Intensity, Time);
 			}
@@ -136,7 +137,7 @@ public class Ems_Handler : MonoBehaviour {
 			ems_Intensity = 0;
 		}
 
-		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/4){
+		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/2){
 			ems_Intensity = 1000;
 		}
 	}
@@ -147,6 +148,29 @@ public class Ems_Handler : MonoBehaviour {
 		}
 		else{
 			ems_Intensity = 1000;
+		}
+	}
+
+	void EmsStyle_4(){
+		if(ems_lowestDistance < ems_triggerDistance/2f){
+			ems_Intensity = 1000;
+		}
+		else if(ems_lowestDistance < ems_triggerDistance/1.6f){
+			ems_Intensity = 900;
+		}
+		else if(ems_lowestDistance < ems_triggerDistance/1.4f){
+			ems_Intensity = 800;
+		}
+		else if(ems_lowestDistance < ems_triggerDistance/1.2f){
+			ems_Intensity = 700;
+		}
+		else if(ems_lowestDistance < ems_triggerDistance){
+			ems_Intensity = 600;
+		}
+		else ems_Intensity = 0;
+
+		if(ems_lowestDistance_right < (ems_lowestDistance * 1.05f)){
+			ems_Intensity = 0;
 		}
 	}
 
@@ -161,6 +185,9 @@ public class Ems_Handler : MonoBehaviour {
 				break;
 			case 3:
 				EmsStyle_3();
+				break;
+			case 4:
+				EmsStyle_4();
 				break;
 		}
 
