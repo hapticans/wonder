@@ -94,14 +94,10 @@ public class Ems_Handler : MonoBehaviour {
 
 	public IEnumerator LockEMS_enum(){
 		ems_lockedByInput = true;
+		StartEMS(channel, 0, 1);
 		yield return new WaitForSeconds(1.0f);
 		ems_lockedByInput = false;
 	}
-
-	public void LockEMS(){
-		StartCoroutine(LockEMS_enum());
-	}
-
 
 	// EMS Activation
 	IEnumerator Start () {
