@@ -62,8 +62,7 @@ public class CustomButton : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
-		handleEMS();
+			handleEMS();
 		 //TODO: Deactivate Cube1/Cube2 Colliders, Add RigidBody and Box Collider to all Buttons, then set all their Mass to 20, Drag to 100, and uncheck "Use Gravity"
 		 //TODO: For each Button, lock all rotational Axis. Axis movement is restricted in the function.
 		AnimatedButtonUpdate();
@@ -80,6 +79,7 @@ public class CustomButton : MonoBehaviour {
             mat.color = Color.green;
 
 			Debug.Log("Pressed Correct Button");
+			StartCoroutine(ems_handler.LockEMS_enum());
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
             if(lastProcedureStep == 1)

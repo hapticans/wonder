@@ -24,6 +24,7 @@ public class Ems_Handler : MonoBehaviour {
 
 
 	// Config stuff
+	public bool ems_lockedByInput;
 	public bool debug_mode = true; // set to GUI output
 	public bool ems_live = false;  // activate EMS
 	public float ems_triggerDistance = 0.2f;
@@ -71,33 +72,43 @@ public class Ems_Handler : MonoBehaviour {
 	private IEnumerator EmsTest(){
 		emstest_running = true;
 		yield return new WaitForSeconds(1.0f);
-		StartEMS(channel, 600, 500);
+		StartEMS(channel, 60, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 700, 500);
+		StartEMS(channel, 70, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 800, 500);
+		StartEMS(channel, 80, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 900, 500);
+		StartEMS(channel, 90, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 1000, 999);
+		StartEMS(channel, 100, 999);
 		yield return new WaitForSeconds(0.8f);
-		StartEMS(channel, 900, 500);
+		StartEMS(channel, 90, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 800, 500);
+		StartEMS(channel, 80, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 700, 500);
+		StartEMS(channel, 70, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 600, 500);
+		StartEMS(channel, 60, 500);
 		emstest_running = false;
+	}
+
+	public IEnumerator LockEMS_enum(){
+		ems_lockedByInput = true;
+		yield return new WaitForSeconds(1.0f);
+		ems_lockedByInput = false;
+	}
+
+	public void LockEMS(){
+		StartCoroutine(LockEMS_enum());
 	}
 
 
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
-			// yield return new WaitForSeconds(0.15f); //Alternative
-			yield return new WaitForSeconds((((float)(Time)) / 1000) - 150);
-			if(ems_live && ems_Intensity != 0 ){
+			yield return new WaitForSeconds(0.15f); //Alternative
+			//yield return new WaitForSeconds((((float)(Time)) / 1000) - 150);
+			if(ems_live && ems_Intensity != 0 && !ems_lockedByInput){
 				StartEMS(channel, ems_Intensity, Time);
 			}
 		}
@@ -121,24 +132,24 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void EmsStyle_1(){ // simple first linear approach, small deadzone
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40) * 10);
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40));
 
-		if(ems_Intensity < 600 || ems_lowestDistance_right < ems_lowestDistance){
+		if(ems_Intensity < 60 || ems_lowestDistance_right < ems_lowestDistance){
 			ems_Intensity = 0;
 		}
-		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/6){
-			ems_Intensity = 1000;
+		else if(ems_Intensity > 100 || ems_lowestDistance < ems_triggerDistance/6){
+			ems_Intensity = 100;
 		}
 	}
 
 	void EmsStyle_2(){ // harsher actuation, but larger deadzone around the right button
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowestDistance / (ems_triggerDistance*0.8f)) * 40) * 10);
-		if(ems_Intensity < 600 || ems_lowestDistance_right < (ems_lowestDistance*1.2f)){
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowestDistance / (ems_triggerDistance*0.8f)) * 40));
+		if(ems_Intensity < 60 || ems_lowestDistance_right < (ems_lowestDistance*1.2f)){
 			ems_Intensity = 0;
 		}
 
-		else if(ems_Intensity > 1000 || ems_lowestDistance < ems_triggerDistance/2){
-			ems_Intensity = 1000;
+		else if(ems_Intensity > 100 || ems_lowestDistance < ems_triggerDistance/2){
+			ems_Intensity = 100;
 		}
 	}
 
@@ -147,25 +158,25 @@ public class Ems_Handler : MonoBehaviour {
 			ems_Intensity = 0;
 		}
 		else{
-			ems_Intensity = 1000;
+			ems_Intensity = 100;
 		}
 	}
 
 	void EmsStyle_4(){
 		if(ems_lowestDistance < ems_triggerDistance/2f){
-			ems_Intensity = 1000;
+			ems_Intensity = 100;
 		}
 		else if(ems_lowestDistance < ems_triggerDistance/1.6f){
-			ems_Intensity = 900;
+			ems_Intensity = 90;
 		}
 		else if(ems_lowestDistance < ems_triggerDistance/1.4f){
-			ems_Intensity = 800;
+			ems_Intensity = 80;
 		}
 		else if(ems_lowestDistance < ems_triggerDistance/1.2f){
-			ems_Intensity = 700;
+			ems_Intensity = 70;
 		}
 		else if(ems_lowestDistance < ems_triggerDistance){
-			ems_Intensity = 600;
+			ems_Intensity = 60;
 		}
 		else ems_Intensity = 0;
 
