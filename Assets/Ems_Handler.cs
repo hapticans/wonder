@@ -13,10 +13,17 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform predictor; // predictor collision object
 
   // EMS related variables
-	public string EmsModule = "EMS09RH";
-  public string Server = "192.168.43.1";
-  public int Port = 5005;
-	public int channel = 1;
+	public string Server = "192.168.43.1";
+	public int Port = 5005;
+
+	public string EmsModule_UpDown = "EMS08IK";
+	public string EmsModule_LeftRight = "EMS09RH";
+
+	public int channel_down = 0;
+	public int channel_up = 1;
+	public int channel_left = 0;
+	public int channel_right = 1;
+
 	private int ems_Intensity;
 	public int ems_mode = 2;
 	private int Time = 250;
@@ -30,8 +37,8 @@ public class Ems_Handler : MonoBehaviour {
 	public float ems_triggerDistance = 0.2f;
 
 	// Initialize with large value
-	private float ems_lowestDistance = 10000.0f;
-	private float ems_lowestDistance_right = 10000.0f;
+	private float ems_lowDist_wrong = 10000.0f;
+	private float ems_lowDist_correct = 10000.0f;
 
 
 	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
@@ -39,8 +46,8 @@ public class Ems_Handler : MonoBehaviour {
 
 		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
 
-		if(ems_lowestDistance > distance_min){
-			ems_lowestDistance = distance_min;
+		if(ems_lowDist_wrong > distance_min){
+			ems_lowDist_wrong = distance_min;
 		}
 	}
 	// to be called by right buttons during their update, in order to check their position for EMS relevance
@@ -48,14 +55,19 @@ public class Ems_Handler : MonoBehaviour {
 
 		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
 
-		if(ems_lowestDistance_right > distance_min){
-			ems_lowestDistance_right = distance_min;
+		if(ems_lowDist_correct > distance_min){
+			ems_lowDist_correct = distance_min;
 		}
 	}
 
-	public void StartEMS(int startchannel, int startintensity, int starttime)
+	public void StartEMS_UpDown(int c, int i, int t)
 	{
-		Ems_SendMessage(EmsModule+"C"+startchannel+"I"+startintensity+"T"+starttime);
+		Ems_SendMessage(EmsModule_UpDown+"C"+c+"I"+i+"T"+t);
+	}
+
+	public void StartEMS_LeftRight(int c, int i, int t)
+	{
+		Ems_SendMessage(EmsModule_LeftRight+"C"+c+"I"+i+"T"+t);
 	}
 
 	public void Ems_SendMessage(string message)
@@ -72,29 +84,29 @@ public class Ems_Handler : MonoBehaviour {
 	private IEnumerator EmsTest(){
 		emstest_running = true;
 		yield return new WaitForSeconds(1.0f);
-		StartEMS(channel, 60, 500);
+		StartEMS_UpDown(channel_up, 60, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 70, 500);
+		StartEMS_UpDown(channel_up, 70, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 80, 500);
+		StartEMS_UpDown(channel_up, 80, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 90, 500);
+		StartEMS_UpDown(channel_up, 90, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 100, 999);
+		StartEMS_UpDown(channel_up, 100, 999);
 		yield return new WaitForSeconds(0.8f);
-		StartEMS(channel, 90, 500);
+		StartEMS_UpDown(channel_up, 90, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 80, 500);
+		StartEMS_UpDown(channel_up, 80, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 70, 500);
+		StartEMS_UpDown(channel_up, 70, 500);
 		yield return new WaitForSeconds(0.35f);
-		StartEMS(channel, 60, 500);
+		StartEMS_UpDown(channel_up, 60, 500);
 		emstest_running = false;
 	}
 
 	public IEnumerator LockEMS_enum(){
 		ems_lockedByInput = true;
-		StartEMS(channel, 0, 1);
+		StartEMS_UpDown(channel_up, 0, 1);
 		yield return new WaitForSeconds(1.0f);
 		ems_lockedByInput = false;
 	}
@@ -105,7 +117,7 @@ public class Ems_Handler : MonoBehaviour {
 			yield return new WaitForSeconds(0.15f); //Alternative
 			//yield return new WaitForSeconds((((float)(Time)) / 1000) - 150);
 			if(ems_live && ems_Intensity != 0 && !ems_lockedByInput){
-				StartEMS(channel, ems_Intensity, Time);
+				StartEMS_UpDown(channel_up, ems_Intensity, Time);
 			}
 		}
 	}
@@ -114,7 +126,7 @@ public class Ems_Handler : MonoBehaviour {
 
 		if (Input.GetKeyDown (KeyCode.End)) {		// Key Event for Emergency Stop when pressing "End"
 			ems_live = false;
-			StartEMS(channel, 0, 1);
+			StartEMS_UpDown(channel_up, 0, 1);
 		}
 		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running){ // Key Event for Calibration run when pressing "Insert"
 			StartCoroutine(EmsTest());
@@ -128,29 +140,29 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void EmsStyle_1(){ // simple first linear approach, small deadzone
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowestDistance / ems_triggerDistance) * 40));
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.0f - ems_lowDist_wrong / ems_triggerDistance) * 40));
 
-		if(ems_Intensity < 60 || ems_lowestDistance_right < ems_lowestDistance){
+		if(ems_Intensity < 60 || ems_lowDist_correct < ems_lowDist_wrong){
 			ems_Intensity = 0;
 		}
-		else if(ems_Intensity > 100 || ems_lowestDistance < ems_triggerDistance/6){
+		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/6){
 			ems_Intensity = 100;
 		}
 	}
 
 	void EmsStyle_2(){ // harsher actuation, but larger deadzone around the right button
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowestDistance / (ems_triggerDistance*0.8f)) * 40));
-		if(ems_Intensity < 60 || ems_lowestDistance_right < (ems_lowestDistance*1.2f)){
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowDist_wrong / (ems_triggerDistance*0.8f)) * 40));
+		if(ems_Intensity < 60 || ems_lowDist_correct < (ems_lowDist_wrong*1.2f)){
 			ems_Intensity = 0;
 		}
 
-		else if(ems_Intensity > 100 || ems_lowestDistance < ems_triggerDistance/2){
+		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/2){
 			ems_Intensity = 100;
 		}
 	}
 
 	void EmsStyle_3(){	// binary, but even larger deadzone. lower triggerdistance
-		if(ems_lowestDistance_right < (ems_lowestDistance*1.3f) || ems_lowestDistance > ems_triggerDistance*0.75f){
+		if(ems_lowDist_correct < (ems_lowDist_wrong*1.3f) || ems_lowDist_wrong > ems_triggerDistance*0.75f){
 			ems_Intensity = 0;
 		}
 		else{
@@ -159,24 +171,24 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void EmsStyle_4(){
-		if(ems_lowestDistance < ems_triggerDistance/2f){
+		if(ems_lowDist_wrong < ems_triggerDistance/2f){
 			ems_Intensity = 100;
 		}
-		else if(ems_lowestDistance < ems_triggerDistance/1.6f){
+		else if(ems_lowDist_wrong < ems_triggerDistance/1.6f){
 			ems_Intensity = 90;
 		}
-		else if(ems_lowestDistance < ems_triggerDistance/1.4f){
+		else if(ems_lowDist_wrong < ems_triggerDistance/1.4f){
 			ems_Intensity = 80;
 		}
-		else if(ems_lowestDistance < ems_triggerDistance/1.2f){
+		else if(ems_lowDist_wrong < ems_triggerDistance/1.2f){
 			ems_Intensity = 70;
 		}
-		else if(ems_lowestDistance < ems_triggerDistance){
+		else if(ems_lowDist_wrong < ems_triggerDistance){
 			ems_Intensity = 60;
 		}
 		else ems_Intensity = 0;
 
-		if(ems_lowestDistance_right < (ems_lowestDistance * 1.05f)){
+		if(ems_lowDist_correct < (ems_lowDist_wrong * 1.05f)){
 			ems_Intensity = 0;
 		}
 	}
@@ -199,7 +211,7 @@ public class Ems_Handler : MonoBehaviour {
 		}
 
 		// TODO: Solve after-frame reset in a proper way
-	  ems_lowestDistance = 10000.0f;
-		ems_lowestDistance_right = 10000.0f;
+	  ems_lowDist_wrong = 10000.0f;
+		ems_lowDist_correct = 10000.0f;
 	}
 }
