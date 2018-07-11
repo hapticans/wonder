@@ -29,7 +29,7 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS activation mode of operation
 	public int ems_mode = 2;
 	// EMS activation time per trigger
-	private int Time = 250;
+	private int Time = 175;
 
 
 	private bool emstest_running = false;
@@ -41,7 +41,7 @@ public class Ems_Handler : MonoBehaviour {
 	// Config stuff
 
 	public bool debug_mode = true; // set to GUI output
-	public bool ems_active = false;  // activate EMS
+	public bool ems_active = true;  // activate EMS
 	public bool directionCheck_active = true; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
 	public float ems_triggerDistance = 0.2f;
 
