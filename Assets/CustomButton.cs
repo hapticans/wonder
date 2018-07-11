@@ -79,7 +79,7 @@ public class CustomButton : MonoBehaviour {
             mat.color = Color.green;
 
 			Debug.Log("Pressed Correct Button");
-			StartCoroutine(ems_handler.LockEMS_enum());
+			StartCoroutine(ems_handler.LockEMS_enum(1.5f));
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
             if(lastProcedureStep == 1)

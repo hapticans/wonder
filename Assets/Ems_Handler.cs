@@ -29,7 +29,6 @@ public class Ems_Handler : MonoBehaviour {
 	private int Time = 250;
 	private bool emstest_running = false;
 
-
 	// Config stuff
 	public bool ems_lockedByInput;
 	public bool debug_mode = true; // set to GUI output
@@ -39,7 +38,6 @@ public class Ems_Handler : MonoBehaviour {
 	// Initialize with large value
 	private float ems_lowDist_wrong = 10000.0f;
 	private float ems_lowDist_correct = 10000.0f;
-
 
 	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
 	public void CheckEMS_wrongButton(Vector3 button_position){
@@ -104,12 +102,14 @@ public class Ems_Handler : MonoBehaviour {
 		emstest_running = false;
 	}
 
-	public IEnumerator LockEMS_enum(){
+	public IEnumerator LockEMS_enum(float time){
 		ems_lockedByInput = true;
-		StartEMS_UpDown(channel_up, 0, 1);
-		yield return new WaitForSeconds(1.0f);
+		StartEMS_UpDown(channel_up, 1, 1);
+		yield return new WaitForSeconds(time);
 		ems_lockedByInput = false;
 	}
+
+
 
 	// EMS Activation
 	IEnumerator Start () {
@@ -136,6 +136,9 @@ public class Ems_Handler : MonoBehaviour {
 	void OnGUI(){
 		if(debug_mode){
 			GUI.Label (new Rect(0,0,100,100), "EMS - Level = " + ems_Intensity);
+		}
+		if(ems_lockedByInput && debug_mode){
+			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or right direction");
 		}
 	}
 
