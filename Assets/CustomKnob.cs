@@ -33,7 +33,7 @@ public class CustomKnob : MonoBehaviour {
       mat.color = Color.green;
 
 			Debug.Log("Pressed Correct Button");
-			StartCoroutine(ems_handler.LockEMS_enum(1.5f));
+			StartCoroutine(ems_handler.LockEMS_enum(2.0f));
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
       if(lastProcedureStep == 1)
