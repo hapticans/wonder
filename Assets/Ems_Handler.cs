@@ -12,29 +12,40 @@ public class Ems_Handler : MonoBehaviour {
 	public Transform player; // player collision object
 	public Transform predictor; // predictor collision object
 
-  // EMS related variables
+  // EMS related variable
+	//-----------------------------------------------------------------------
+	// IP and port for the Mobile device running the App and hosting the Hotspot
 	public string Server = "192.168.43.1";
 	public int Port = 5005;
 
+	// Names of the two MoveYourBody-Toolkit Arduino devices, and their respective channels
 	public string EmsModule_UpDown = "EMS08IK";
 	public string EmsModule_LeftRight = "EMS09RH";
-
 	public int channel_down = 0;
 	public int channel_up = 1;
 	public int channel_left = 0;
 	public int channel_right = 1;
 
-	private int ems_Intensity;
+	// EMS activation mode of operation
 	public int ems_mode = 2;
+	// EMS activation time per trigger
 	private int Time = 250;
+
+
 	private bool emstest_running = false;
+	private bool checkingDirection = false;
+	public bool ems_lockedByInput;
+	private int ems_Intensity;
+
 
 	// Config stuff
-	public bool ems_lockedByInput;
+
 	public bool debug_mode = true; // set to GUI output
-	public bool ems_live = false;  // activate EMS
+	public bool ems_active = false;  // activate EMS
+	public bool directionCheck_active = true; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
 	public float ems_triggerDistance = 0.2f;
 
+	private float playerButtonDistHelper;
 	// Initialize with large value
 	private float ems_lowDist_wrong = 10000.0f;
 	private float ems_lowDist_correct = 10000.0f;
@@ -52,7 +63,7 @@ public class Ems_Handler : MonoBehaviour {
 	public void CheckEMS_rightButton(Vector3 button_position){
 
 		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
-
+		playerButtonDistHelper = Vector3.Distance(button_position, player.position);
 		if(ems_lowDist_correct > distance_min){
 			ems_lowDist_correct = distance_min;
 		}
@@ -101,12 +112,30 @@ public class Ems_Handler : MonoBehaviour {
 		StartEMS_UpDown(channel_up, 60, 500);
 		emstest_running = false;
 	}
-
+	// To be called by CustomButton or CustomKnob after a right entry has been made.
+	// Also to be called by the movement tracker, if the player moves towards the right object
 	public IEnumerator LockEMS_enum(float time){
 		ems_lockedByInput = true;
-		StartEMS_UpDown(channel_up, 1, 1);
+		if(ems_active && ems_lowDist_wrong < ems_triggerDistance){
+			StartEMS_UpDown(channel_up, 1, 1);
+	  }
 		yield return new WaitForSeconds(time);
 		ems_lockedByInput = false;
+	}
+
+	public IEnumerator CheckDirection(float lowdist_correct, Vector3 playerPos){
+		checkingDirection = true;
+		Vector3 oldPlayerPosition = playerPos;
+		float oldDistanceTowardsRight = playerButtonDistHelper;
+		yield return new WaitForSeconds(0.5f);
+		float deltaDistanceTowardsRight = oldDistanceTowardsRight - playerButtonDistHelper;
+		float deltaDistancePlayer = Vector3.Distance(player.position, oldPlayerPosition);
+		checkingDirection = false;
+		if(deltaDistancePlayer > 0 && deltaDistanceTowardsRight > deltaDistancePlayer * 0.98f){
+			StartCoroutine(LockEMS_enum(0.5f));
+		}
+
+
 	}
 
 
@@ -114,9 +143,10 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS Activation
 	IEnumerator Start () {
 		while(true){
+
 			yield return new WaitForSeconds(0.15f); //Alternative
-			//yield return new WaitForSeconds((((float)(Time)) / 1000) - 150);
-			if(ems_live && ems_Intensity != 0 && !ems_lockedByInput){
+			// yield return new WaitForSeconds(((float)(Time)) / 1000);
+			if(ems_active && ems_Intensity != 0 && !ems_lockedByInput){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
 			}
 		}
@@ -125,8 +155,8 @@ public class Ems_Handler : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown (KeyCode.End)) {		// Key Event for Emergency Stop when pressing "End"
-			ems_live = false;
-			StartEMS_UpDown(channel_up, 0, 1);
+			ems_active = false;
+			StartEMS_UpDown(channel_up, 1, 1);
 		}
 		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running){ // Key Event for Calibration run when pressing "Insert"
 			StartCoroutine(EmsTest());
@@ -134,11 +164,12 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void OnGUI(){
-		if(debug_mode){
+		if(debug_mode && !ems_lockedByInput){
 			GUI.Label (new Rect(0,0,100,100), "EMS - Level = " + ems_Intensity);
 		}
 		if(ems_lockedByInput && debug_mode){
-			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or right direction");
+			GUI.Label (new Rect(0,0,100,100), "EMS - Level = 0");
+			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or direction");
 		}
 	}
 
@@ -212,6 +243,9 @@ public class Ems_Handler : MonoBehaviour {
 				EmsStyle_4();
 				break;
 		}
+		if(!checkingDirection && directionCheck_active){
+			StartCoroutine(CheckDirection(ems_lowDist_correct, player.position));
+	  }
 
 		// TODO: Solve after-frame reset in a proper way
 	  ems_lowDist_wrong = 10000.0f;
