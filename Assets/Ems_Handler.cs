@@ -34,7 +34,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	private bool emstest_running = false;
 	private bool checkingDirection = false;
-	public bool ems_lockedByInput;
+	public int ems_lockedByInput;
 	private int ems_Intensity;
 
 
@@ -115,12 +115,12 @@ public class Ems_Handler : MonoBehaviour {
 	// To be called by CustomButton or CustomKnob after a right entry has been made.
 	// Also to be called by the movement tracker, if the player moves towards the right object
 	public IEnumerator LockEMS_enum(float time){
-		ems_lockedByInput = true;
+		ems_lockedByInput++;
 		if(ems_active && ems_lowDist_wrong < ems_triggerDistance){
 			StartEMS_UpDown(channel_up, 1, 1);
 	  }
 		yield return new WaitForSeconds(time);
-		ems_lockedByInput = false;
+		ems_lockedByInput--;
 	}
 
 	public IEnumerator CheckDirection(float lowdist_correct, Vector3 playerPos){
@@ -146,7 +146,7 @@ public class Ems_Handler : MonoBehaviour {
 
 			yield return new WaitForSeconds(0.15f); //Alternative
 			// yield return new WaitForSeconds(((float)(Time)) / 1000);
-			if(ems_active && ems_Intensity != 0 && !ems_lockedByInput){
+			if(ems_active && ems_Intensity != 0 && ems_lockedByInput == 0){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
 			}
 		}
@@ -164,10 +164,10 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void OnGUI(){
-		if(debug_mode && !ems_lockedByInput){
+		if(debug_mode && ems_lockedByInput == 0){
 			GUI.Label (new Rect(0,0,100,100), "EMS - Level = " + ems_Intensity);
 		}
-		if(ems_lockedByInput && debug_mode){
+		if(ems_lockedByInput > 0 && debug_mode){
 			GUI.Label (new Rect(0,0,100,100), "EMS - Level = 0");
 			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or direction");
 		}
