@@ -32,4 +32,8 @@ public class InputElement : SequenceElement
     {
         return counter;
     }
+
+	public int GetTargetInteractionCount() {
+		return 1;
+	}
 }

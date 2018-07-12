@@ -101,7 +101,9 @@ public class LoadSceneScript : MonoBehaviour
             String data = File.ReadAllText(objectfile);
             generateDictionaryAndArray(data);
 
-            PersistentManager.Instance.procedure = this.parseSequenceElementRow(sequenceArray[0]);
+			SequenceElement parsed = this.parseSequenceElementRow(sequenceArray[0]);
+			PersistentManager.Instance.procedure = parsed;
+			PersistentManager.Instance.setProceduretarget(parsed.GetTargetInteractionCount());
         }
         else
         {

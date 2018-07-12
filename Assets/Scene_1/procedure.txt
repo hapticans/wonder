@@ -1,1 +1,3 @@
-﻿seq_general:6,true,Knob_1_L,Konsole1_Blue_Button,Konsole1_Gruen_Button,Konsole1_Blue_Button,Konsole1_Gelb_Button,Konsole3_Gelb_Button,Konsole3_Gruen_Button;
+﻿sqE1:1,true,sqE2;
+sqE2:4,true,Konsole1_Blue_Button,Konsole1_Gruen_Button,Konsole1_Gelb_Button,sqE3;
+sqE3:2,false,Konsole1_Rot_Button,Konsole2_Gelb_Button;

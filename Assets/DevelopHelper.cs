@@ -12,31 +12,31 @@ public class DevelopHelper
     {
         if (Input.GetKeyDown("1")||Input.GetKeyDown("[1]"))
         {
-            GameObject button = GameObject.Find("Druckschalter_1_Knopf");
+			GameObject button = GameObject.Find("Konsole1_Rot_Button");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
         if (Input.GetKeyDown("2")||Input.GetKeyDown("[2]"))
         {
-            GameObject button = GameObject.Find("Druckschalter_2_Knopf");
+			GameObject button = GameObject.Find("Konsole1_Blue_Button");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
         if (Input.GetKeyDown("3")||Input.GetKeyDown("[3]"))
         {
-            GameObject button = GameObject.Find("Druckschalter_3_Knopf");
+			GameObject button = GameObject.Find("Konsole1_Gruen_Button");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
         if (Input.GetKeyDown("4")||Input.GetKeyDown("[4]"))
         {
-            GameObject button = GameObject.Find("Druckschalter_4_Knopf");
+			GameObject button = GameObject.Find("Konsole1_Gelb_Button");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }
         if (Input.GetKeyDown("5")||Input.GetKeyDown("[5]"))
         {
-            GameObject button = GameObject.Find("Druckschalter_5_Knopf");
+			GameObject button = GameObject.Find("Konsole2_Rot_Button");
             button.GetComponent<CustomButton>().checkButton();
             return;
         }

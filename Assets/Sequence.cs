@@ -24,7 +24,6 @@ public class Sequence : SequenceElement
         this.targetInteractionCount = counter;
         this.order = order;
         this.elements = elements;
-        PersistentManager.Instance.setProceduretarget(counter);
     }
 
 	public bool checkIfCorrect(String name, bool markAsDone)
@@ -43,21 +42,27 @@ public class Sequence : SequenceElement
 
 			returnValue = elements[runner].checkIfCorrect(name, markAsDone);
         } else
-        if(!order){
+			if(!order){
             for (int i = 0; i < elements.GetLength(0); i++)
             {
-					returnValue = elements[i].checkIfCorrect(name, markAsDone);
-                
+				returnValue = elements[i].checkIfCorrect(name, markAsDone);
+               
                 // Already found fitting Element
                 if (returnValue)
                 {
+					runner = i;
                     break;
                 }
             }
-        }
+			}
+		//if (markAsDone && returnValue) {
+		//	Debug.Log (returnValue);
+		//	Debug.Log (elements [runner].counterReached ());
+		//}
         // Increment Return Counter when true was returned AND subsequence is fully satisfied
         if (returnValue && elements[runner].counterReached())
         {
+			Debug.Log (returnValue);
             returncounter++;
         }
         // Sequenz abgearbeitet
@@ -67,11 +72,16 @@ public class Sequence : SequenceElement
 
     public bool counterReached()
     {
-        //Fängt Fehler beim erstellen von Szenen ab, sonst out of bounce
+        //Fängt Fehler beim erstellen von Szenen ab, sonst out of bounds
         if(runner >= this.elements.GetLength(0)){
             return true;
         }
+
         return returncounter >= targetInteractionCount; 
     }
+
+	public int GetTargetInteractionCount() {
+		return targetInteractionCount;
+	}
     
 }
