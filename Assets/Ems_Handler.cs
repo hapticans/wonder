@@ -48,110 +48,10 @@ public class Ems_Handler : MonoBehaviour {
 
 
 	// Initialize with large value
+	private Vector3 ems_wrong_angles;
 	private float ems_lowDist_wrong = 10000.0f;
 	private float ems_lowDist_correct = 10000.0f;
 	private float playerButtonDistHelper;
-	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
-	public void CheckEMS_wrongButton(Vector3 button_position){
-
-		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
-
-		if(ems_lowDist_wrong > distance_min){
-			ems_lowDist_wrong = distance_min;
-		}
-	}
-	// to be called by right buttons during their update, in order to check their position for EMS relevance
-	public void CheckEMS_rightButton(Vector3 button_position){
-
-		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
-		playerButtonDistHelper = Vector3.Distance(button_position, player.position);
-		if(ems_lowDist_correct > distance_min){
-			ems_lowDist_correct = distance_min;
-		}
-	}
-
-	public void StartEMS_UpDown(int c, int i, int t)
-	{
-		Ems_SendMessage(EmsModule_UpDown+"C"+c+"I"+i+"T"+t);
-	}
-
-	public void StartEMS_LeftRight(int c, int i, int t)
-	{
-		Ems_SendMessage(EmsModule_LeftRight+"C"+c+"I"+i+"T"+t);
-	}
-
-	public void Ems_SendMessage(string message)
-	{
-		Debug.Log("UDP: " + message);
-		var client = new UdpClient();
-		var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
-		client.Connect(ep);
-		var data = Encoding.ASCII.GetBytes(message);
-		client.Send(data, data.Length);
-	}
-
-	// Calibration run, cycling through 60% - 100% - 60% EMS
-	private IEnumerator EmsTest(){
-		emstest_running = true;
-		yield return new WaitForSeconds(1.0f);
-		StartEMS_UpDown(channel_up, 60, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 70, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 80, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 90, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 100, 999);
-		yield return new WaitForSeconds(0.8f);
-		StartEMS_UpDown(channel_up, 90, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 80, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 70, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 60, 500);
-		emstest_running = false;
-	}
-	// To be called by CustomButton or CustomKnob after a right entry has been made.
-	// Also to be called by the movement tracker, if the player moves towards the right object
-	public IEnumerator LockEMS_enum(float time){
-		ems_lockedByInput++;
-		if(ems_active && ems_lowDist_wrong < ems_triggerDistance){
-			StartEMS_UpDown(channel_up, 1, 1);
-	  }
-		yield return new WaitForSeconds(time);
-		ems_lockedByInput--;
-	}
-
-	public IEnumerator CheckDirection(float lowdist_correct, Vector3 playerPos){
-		checkingDirection = true;
-		Vector3 oldPlayerPosition = playerPos;
-		float oldDistanceTowardsRight = playerButtonDistHelper;
-		yield return new WaitForSeconds(0.5f);
-		float deltaDistanceTowardsRight = oldDistanceTowardsRight - playerButtonDistHelper;
-		float deltaDistancePlayer = Vector3.Distance(player.position, oldPlayerPosition);
-		if(deltaDistancePlayer > 0 && deltaDistanceTowardsRight > deltaDistancePlayer * 0.98f){
-			StartCoroutine(LockEMS_enum(0.5f));
-		}
-		checkingDirection = false;
-	}
-
-	public IEnumerator EMS_PulseLeftRight(int c, int i, int t){
-		pulsating = true;
-		StartEMS_LeftRight(c,i,t);
-		yield return new WaitForSeconds((((float)(t)) / 500));
-		pulsating = false;
-	}
-
-	public IEnumerator EMS_PulseDown(int i, int t){
-		pulsating = true;
-		StartEMS_LeftRight(channel_down,i,t);
-		yield return new WaitForSeconds((((float)(t)) / 500));
-		pulsating = false;
-	}
-
-
 
 	// EMS Activation
 	IEnumerator Start () {
@@ -184,6 +84,33 @@ public class Ems_Handler : MonoBehaviour {
 			GUI.Label (new Rect(0,0,100,100), "EMS - Level = 0");
 			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or direction");
 		}
+	}
+
+	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
+	void LateUpdate(){
+		switch(ems_mode){
+			case 1:
+				EmsStyle_1();
+				break;
+			case 2:
+				EmsStyle_2();
+				break;
+			case 3:
+				EmsStyle_3();
+				break;
+			case 4:
+				EmsStyle_4();
+				break;
+		}
+		if(!checkingDirection && directionCheck_active){
+			StartCoroutine(CheckDirection(ems_lowDist_correct, player.position));
+	  }
+		Debug.Log(ems_wrong_angles.y);
+		//Debug.Log(ems_wrong_angles.y);
+
+		// TODO: Solve after-frame reset in a proper way
+	  ems_lowDist_wrong = 10000.0f;
+		ems_lowDist_correct = 10000.0f;
 	}
 
 	void EmsStyle_1(){ // simple first linear approach, small deadzone
@@ -240,28 +167,110 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
-	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
-	void LateUpdate(){
-		switch(ems_mode){
-			case 1:
-				EmsStyle_1();
-				break;
-			case 2:
-				EmsStyle_2();
-				break;
-			case 3:
-				EmsStyle_3();
-				break;
-			case 4:
-				EmsStyle_4();
-				break;
-		}
-		if(!checkingDirection && directionCheck_active){
-			StartCoroutine(CheckDirection(ems_lowDist_correct, player.position));
-	  }
+	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
+	public void CheckEMS_wrongButton(Vector3 button_position, Quaternion button_parentrotation){
 
-		// TODO: Solve after-frame reset in a proper way
-	  ems_lowDist_wrong = 10000.0f;
-		ems_lowDist_correct = 10000.0f;
+		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
+		if(ems_lowDist_wrong > distance_min){
+			ems_lowDist_wrong = distance_min;
+
+			Vector3 player_button_delta = player.position - button_position;
+			Quaternion look_dir = Quaternion.LookRotation(player_button_delta);
+			var q = Quaternion.Inverse(button_parentrotation) * look_dir ;
+			ems_wrong_angles = q.eulerAngles;
+		}
+
+	}
+	// to be called by right buttons during their update, in order to check their position for EMS relevance
+	public void CheckEMS_rightButton(Vector3 button_position, Quaternion button_parentrotation){
+
+		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
+		playerButtonDistHelper = Vector3.Distance(button_position, player.position);
+		if(ems_lowDist_correct > distance_min){
+			ems_lowDist_correct = distance_min;
+		}
+	}
+
+	public void StartEMS_UpDown(int c, int i, int t)
+	{
+		Ems_SendMessage(EmsModule_UpDown+"C"+c+"I"+i+"T"+t);
+	}
+
+	public void StartEMS_LeftRight(int c, int i, int t)
+	{
+		Ems_SendMessage(EmsModule_LeftRight+"C"+c+"I"+i+"T"+t);
+	}
+
+	public void Ems_SendMessage(string message)
+	{
+		Debug.Log("UDP: " + message);
+		var client = new UdpClient();
+		var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
+		client.Connect(ep);
+		var data = Encoding.ASCII.GetBytes(message);
+		client.Send(data, data.Length);
+	}
+
+
+	// To be called by CustomButton or CustomKnob after a right entry has been made.
+	// Also to be called by the movement tracker, if the player moves towards the right object
+	public IEnumerator LockEMS_enum(float time){
+		ems_lockedByInput++;
+		if(ems_active && ems_lowDist_wrong < ems_triggerDistance){
+			StartEMS_UpDown(channel_up, 1, 1);
+		}
+		yield return new WaitForSeconds(time);
+		ems_lockedByInput--;
+	}
+
+	public IEnumerator CheckDirection(float lowdist_correct, Vector3 playerPos){
+		checkingDirection = true;
+		Vector3 oldPlayerPosition = playerPos;
+		float oldDistanceTowardsRight = playerButtonDistHelper;
+		yield return new WaitForSeconds(0.5f);
+		float deltaDistanceTowardsRight = oldDistanceTowardsRight - playerButtonDistHelper;
+		float deltaDistancePlayer = Vector3.Distance(player.position, oldPlayerPosition);
+		if(deltaDistancePlayer > 0 && deltaDistanceTowardsRight > deltaDistancePlayer * 0.98f){
+			StartCoroutine(LockEMS_enum(0.5f));
+		}
+		checkingDirection = false;
+	}
+
+	public IEnumerator EMS_PulseLeftRight(int c, int i, int t){
+		pulsating = true;
+		StartEMS_LeftRight(c,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		pulsating = false;
+	}
+
+	public IEnumerator EMS_PulseDown(int i, int t){
+		pulsating = true;
+		StartEMS_LeftRight(channel_down,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		pulsating = false;
+	}
+
+	// Calibration run, cycling through 60% - 100% - 60% EMS
+	private IEnumerator EmsTest(){
+		emstest_running = true;
+		yield return new WaitForSeconds(1.0f);
+		StartEMS_UpDown(channel_up, 60, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 70, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 80, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 90, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 100, 999);
+		yield return new WaitForSeconds(0.8f);
+		StartEMS_UpDown(channel_up, 90, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 80, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 70, 500);
+		yield return new WaitForSeconds(0.35f);
+		StartEMS_UpDown(channel_up, 60, 500);
+		emstest_running = false;
 	}
 }

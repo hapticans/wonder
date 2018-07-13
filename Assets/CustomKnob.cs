@@ -69,10 +69,10 @@ public class CustomKnob : MonoBehaviour {
 
   void handleEMS(){  // TODO: Include feedback for starting to flip into the wrong direction
     if (PersistentManager.Instance.isStepValid(name + "_L") || PersistentManager.Instance.isStepValid(name + "_R")){
-			ems_handler.CheckEMS_rightButton(transform.position);
+			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation);
 		}
 		else{
-			ems_handler.CheckEMS_wrongButton(transform.position);
+			ems_handler.CheckEMS_wrongButton(transform.position, transform.parent.rotation);
 		}
   }
 
