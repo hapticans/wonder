@@ -32,23 +32,26 @@ public class Ems_Handler : MonoBehaviour {
 	// EMS activation time per trigger
 	private int Time = 175;
 	private int ems_Intensity;
+	private int ems_SideIntensity;
 
 	private bool emstest_running = false;
 	private bool checkingDirection = false;
 	private bool pulsating = false;
-	public int ems_lockedByInput;
+	private int ems_lockedByInput;
 
 	// Config stuff
 	public bool debug_mode = true; // set to GUI output
 	public bool ems_active = true;  // activate EMS
 	public bool directionCheck_active = true; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
-	public bool positiveFeedbackActive = true; // pulsating encouragement downwards when facing the right button, and left/right for the right direction when approaching a knob TODO: implement condition
+	public bool positiveFeedbackActive = false; // pulsating encouragement downwards when facing the right button, and left/right for the right direction when approaching a knob TODO: implement condition
+	public bool sideDeviceConnected = true;
 	public float ems_triggerDistance = 0.2f;
 
 
 
 	// Initialize with large value
 	private Vector3 ems_wrong_angles;
+	private int currentDirection;
 	private float ems_lowDist_wrong = 10000.0f;
 	private float ems_lowDist_correct = 10000.0f;
 	private float playerButtonDistHelper;
@@ -61,6 +64,9 @@ public class Ems_Handler : MonoBehaviour {
 			// yield return new WaitForSeconds(((float)(Time)) / 1000);
 			if(ems_active && ems_Intensity != 0 && ems_lockedByInput == 0){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
+			}
+			if(ems_active && ems_SideIntensity != 0 && ems_lockedByInput == 0 && sideDeviceConnected){
+				StartEMS_LeftRight(currentDirection, ems_SideIntensity, Time);
 			}
 		}
 	}
@@ -78,11 +84,24 @@ public class Ems_Handler : MonoBehaviour {
 
 	void OnGUI(){
 		if(debug_mode && ems_lockedByInput == 0){
-			GUI.Label (new Rect(0,0,100,100), "EMS - Level = " + ems_Intensity);
+			GUI.Label (new Rect(0,0,200,100), "EMS - Level = " + ems_Intensity);
+		}
+		if(debug_mode && sideDeviceConnected && !positiveFeedbackActive){
+			GUI.Label (new Rect(0,20,200,100), "Side Intensity = " + ems_SideIntensity);
+		}
+		if(debug_mode && sideDeviceConnected && !positiveFeedbackActive && ems_SideIntensity > 1){
+			switch (currentDirection){
+				case 0:
+					GUI.Label (new Rect(0,40,100,100), currentDirection + "Left " + ems_wrong_angles.y + ",,," + ems_wrong_angles.x);
+					break;
+				case 1:
+					GUI.Label (new Rect(0,40,100,100), currentDirection + "Right " + ems_wrong_angles.y + ",,," + ems_wrong_angles.x);
+					break;
+			}
 		}
 		if(ems_lockedByInput > 0 && debug_mode){
-			GUI.Label (new Rect(0,0,100,100), "EMS - Level = 0");
-			GUI.Label (new Rect(0,20,100,100), "EMS locked by right input or direction");
+			GUI.Label (new Rect(0,0,200,100), "EMS - Level = 0");
+			GUI.Label (new Rect(0,60,300,100), "EMS locked by right input or direction");
 		}
 	}
 
@@ -102,6 +121,9 @@ public class Ems_Handler : MonoBehaviour {
 				EmsStyle_4();
 				break;
 		}
+
+		calculateSideIntensity();
+
 		if(!checkingDirection && directionCheck_active){
 			StartCoroutine(CheckDirection(ems_lowDist_correct, player.position));
 	  }
@@ -164,6 +186,25 @@ public class Ems_Handler : MonoBehaviour {
 
 		if(ems_lowDist_correct < (ems_lowDist_wrong * 1.05f)){
 			ems_Intensity = 0;
+		}
+	}
+
+	void calculateSideIntensity(){
+		if(sideDeviceConnected && !positiveFeedbackActive){
+			if(ems_wrong_angles.y < 350.0f && ems_wrong_angles.y > 300.0f){
+				currentDirection = 0;
+				ems_SideIntensity = ems_Intensity - 10;
+			}
+			else if(ems_wrong_angles.y > 10.0f && ems_wrong_angles.y < 60.0f){
+				currentDirection = 1;
+				ems_SideIntensity = ems_Intensity - 10;
+			}
+			if(ems_SideIntensity < 50){
+				ems_SideIntensity = 0;
+			}
+		}
+		else{
+			ems_SideIntensity = 0;
 		}
 	}
 
@@ -245,7 +286,7 @@ public class Ems_Handler : MonoBehaviour {
 
 	public IEnumerator EMS_PulseDown(int i, int t){
 		pulsating = true;
-		StartEMS_LeftRight(channel_down,i,t);
+		StartEMS_UpDown(channel_down,i,t);
 		yield return new WaitForSeconds((((float)(t)) / 500));
 		pulsating = false;
 	}
