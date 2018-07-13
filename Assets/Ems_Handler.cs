@@ -191,11 +191,11 @@ public class Ems_Handler : MonoBehaviour {
 
 	void calculateSideIntensity(){
 		if(sideDeviceConnected && !positiveFeedbackActive){
-			if(ems_wrong_angles.y < 350.0f && ems_wrong_angles.y > 300.0f){
+			if(ems_wrong_angles.y < 340.0f && ems_wrong_angles.y > 300.0f){
 				currentDirection = 0;
 				ems_SideIntensity = ems_Intensity - 10;
 			}
-			else if(ems_wrong_angles.y > 10.0f && ems_wrong_angles.y < 60.0f){
+			else if(ems_wrong_angles.y > 20.0f && ems_wrong_angles.y < 60.0f){
 				currentDirection = 1;
 				ems_SideIntensity = ems_Intensity - 10;
 			}
