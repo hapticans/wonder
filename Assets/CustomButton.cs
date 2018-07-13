@@ -20,8 +20,6 @@ public class CustomButton : MonoBehaviour {
 
 	private Color prevColor;
 
-	private Vector3 originalPosition;
-
 	private bool istriggering;
 
 	public GameObject controller;
@@ -32,16 +30,14 @@ public class CustomButton : MonoBehaviour {
 
     Collider controllerCollider;
 
-    String basis = "OutputLED_";
-
     // Use this for initialization
     void Start () {
 		startPosition = transform.localPosition; // Reset position for Button Animation
 		mat = GetComponent<Renderer>().material;
     prevColor = mat.color;
-		originalPosition = transform.position;
-    controllerCollider = controller.GetComponent<Collider>();
 
+		// for the old collision solution
+    controllerCollider = controller.GetComponent<Collider>();
     buttonCollider1 = GameObject.Find(name.Remove(name.Length - 6) + "Cube1").GetComponent<Collider>();
     buttonCollider2 = GameObject.Find(name.Remove(name.Length - 6) + "Cube2").GetComponent<Collider>();
 
