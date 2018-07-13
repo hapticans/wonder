@@ -28,28 +28,29 @@ public class Ems_Handler : MonoBehaviour {
 
 	// EMS activation mode of operation
 	public int ems_mode = 2;
+
 	// EMS activation time per trigger
 	private int Time = 175;
-
+	private int ems_Intensity;
 
 	private bool emstest_running = false;
 	private bool checkingDirection = false;
+	private bool pulsating = false;
 	public int ems_lockedByInput;
-	private int ems_Intensity;
-
 
 	// Config stuff
-
 	public bool debug_mode = true; // set to GUI output
 	public bool ems_active = true;  // activate EMS
 	public bool directionCheck_active = true; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
+	public bool positiveFeedbackActive = true; // pulsating encouragement downwards when facing the right button, and left/right for the right direction when approaching a knob TODO: implement condition
 	public float ems_triggerDistance = 0.2f;
 
-	private float playerButtonDistHelper;
+
+
 	// Initialize with large value
 	private float ems_lowDist_wrong = 10000.0f;
 	private float ems_lowDist_correct = 10000.0f;
-
+	private float playerButtonDistHelper;
 	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
 	public void CheckEMS_wrongButton(Vector3 button_position){
 
@@ -130,12 +131,24 @@ public class Ems_Handler : MonoBehaviour {
 		yield return new WaitForSeconds(0.5f);
 		float deltaDistanceTowardsRight = oldDistanceTowardsRight - playerButtonDistHelper;
 		float deltaDistancePlayer = Vector3.Distance(player.position, oldPlayerPosition);
-		checkingDirection = false;
 		if(deltaDistancePlayer > 0 && deltaDistanceTowardsRight > deltaDistancePlayer * 0.98f){
 			StartCoroutine(LockEMS_enum(0.5f));
 		}
+		checkingDirection = false;
+	}
 
+	public IEnumerator EMS_PulseLeftRight(int c, int i, int t){
+		pulsating = true;
+		StartEMS_LeftRight(c,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		pulsating = false;
+	}
 
+	public IEnumerator EMS_PulseDown(int i, int t){
+		pulsating = true;
+		StartEMS_LeftRight(channel_down,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		pulsating = false;
 	}
 
 
