@@ -105,8 +105,8 @@ public class Ems_Handler : MonoBehaviour {
 		if(!checkingDirection && directionCheck_active){
 			StartCoroutine(CheckDirection(ems_lowDist_correct, player.position));
 	  }
-		Debug.Log(ems_wrong_angles.y);
 		//Debug.Log(ems_wrong_angles.y);
+
 
 		// TODO: Solve after-frame reset in a proper way
 	  ems_lowDist_wrong = 10000.0f;
