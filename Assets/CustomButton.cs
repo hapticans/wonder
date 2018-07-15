@@ -61,7 +61,7 @@ public class CustomButton : MonoBehaviour
 		{
 			mat.color = Color.green;
 
-			if (enableDebugoutput) { Debug.Log("Pressed Correct Button")};
+			if (enableDebugoutput) { Debug.Log("Pressed Correct Button"); };
 			StartCoroutine(ems_handler.LockEMS_enum(2.0f));
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
@@ -83,7 +83,7 @@ public class CustomButton : MonoBehaviour
 			{
 				feedbackForFailure();
 			}
-			if (enableDebugoutput) { Debug.Log("Pressed wrong button")};
+			if (enableDebugoutput) { Debug.Log("Pressed wrong button"); };
 		}
 	}
 

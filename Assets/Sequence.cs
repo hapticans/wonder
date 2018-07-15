@@ -65,8 +65,8 @@ public class Sequence : SequenceElement
 				returncounter++;
 			}
 
-			// Write to LogList
-			PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now + "," + returnValue.ToString);
+            // Write to LogList
+            PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + returnValue.ToString());
 		}
 		// Sequenz abgearbeitet
 		if (counterReached())

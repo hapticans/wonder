@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class PersistentManager : MonoBehaviour
@@ -22,9 +24,8 @@ public class PersistentManager : MonoBehaviour
 	private int strikes = 0;
 	private int maxStrikes = 3;
 
-	// Log
-	List<string> logmessages = new List<string>()
-
+    // Log
+    List<string> logmessages = new List<string>();
 
 	private void Awake()
 	{
@@ -117,7 +118,7 @@ public class PersistentManager : MonoBehaviour
 	public void writeLogFile()
 	{
 		Debug.Log(logmessages.ToString());
-		WriteAllText(Application.dataPath + "/logs/" + DateTime.Now, logmessages.ToString());      
+		File.WriteAllText(Application.dataPath + "/logs/" + DateTime.Now, logmessages.ToString());      
 	}
 
 }
