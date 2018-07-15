@@ -74,9 +74,8 @@ public class Ems_Handler : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown (KeyCode.End)) {		// Key Event for Emergency Stop when pressing "End"
-			ems_negativeFeedbackActive = false;
-			ems_positiveFeedbackActive = false;
-			StartEMS_UpDown(channel_up, 1, 1);
+			EmergencyStop();
+
 		}
 		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running && ems_negativeFeedbackActive){ // Key Event for Calibration run when pressing "Insert"
 			StartCoroutine(EmsTest());
@@ -193,7 +192,7 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
-	void calculateSideIntensity(){
+	private void calculateSideIntensity(){
 		if(sideDeviceConnected && !ems_positiveFeedbackActive){
 			if(ems_wrong_angles.y < 330.0f && ems_wrong_angles.y > 290.0f){
 				currentDirection = 0;
@@ -254,12 +253,16 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void StartEMS_UpDown(int c, int i, int t)
 	{
-		Ems_SendMessage(EmsModule_UpDown+"C"+c+"I"+i+"T"+t);
+		if(ems_negativeFeedbackActive || ems_positiveFeedbackActive){
+			Ems_SendMessage(EmsModule_UpDown+"C"+c+"I"+i+"T"+t);
+		}
 	}
 
 	public void StartEMS_LeftRight(int c, int i, int t)
 	{
-		Ems_SendMessage(EmsModule_LeftRight+"C"+c+"I"+i+"T"+t);
+		if(ems_negativeFeedbackActive || ems_positiveFeedbackActive){
+			Ems_SendMessage(EmsModule_LeftRight+"C"+c+"I"+i+"T"+t);
+		}
 	}
 
 	public void Ems_SendMessage(string message)
@@ -320,28 +323,42 @@ public class Ems_Handler : MonoBehaviour {
 		yield return new WaitForSeconds(2.0f);
 		pulsating = false;
 	}
+	private void EmergencyStop(){
+		StartEMS_UpDown(channel_up, 1, 1);
+		if(ems_positiveFeedbackActive){
+			StartEMS_UpDown(channel_down, 1, 1);
+		}
+		if(sideDeviceConnected && (ems_positiveFeedbackActive || ems_negativeFeedbackActive)){
+			StartEMS_LeftRight(channel_left, 1, 1);
+			StartEMS_LeftRight(channel_right, 1, 1);
+		}
+		ems_negativeFeedbackActive = false;
+		ems_positiveFeedbackActive = false;
+	}
 
 	// Calibration run, cycling through 60% - 100% - 60% EMS
 	private IEnumerator EmsTest(){
 		emstest_running = true;
-		yield return new WaitForSeconds(1.0f);
-		StartEMS_UpDown(channel_up, 60, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 70, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 80, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 90, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 100, 999);
-		yield return new WaitForSeconds(0.8f);
-		StartEMS_UpDown(channel_up, 90, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 80, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 70, 500);
-		yield return new WaitForSeconds(0.35f);
-		StartEMS_UpDown(channel_up, 60, 500);
+		if(ems_negativeFeedbackActive){
+			yield return new WaitForSeconds(1.0f);
+			StartEMS_UpDown(channel_up, 60, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 70, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 80, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 90, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 100, 999);
+			yield return new WaitForSeconds(0.8f);
+			StartEMS_UpDown(channel_up, 90, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 80, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 70, 500);
+			yield return new WaitForSeconds(0.35f);
+			StartEMS_UpDown(channel_up, 60, 500);
+	  }
 		emstest_running = false;
 	}
 }
