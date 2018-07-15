@@ -22,9 +22,9 @@ public class InputElement : SequenceElement
 		{
 			if (markAsDone) {
 				counter = true;
+                // Write to Log for later analysis
+                PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + counter.ToString());
             }
-            // Write to Log for later analysis
-            PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + counter.ToString());
             return true;
 		}
 		return false;
