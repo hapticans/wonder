@@ -111,7 +111,7 @@ public class CustomButton : MonoBehaviour {
 
     void handleEMS(){
     	if (PersistentManager.Instance.isStepValid(name)){
-				ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation);
+				ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation, false, false);
 			}
 			else{
 				ems_handler.CheckEMS_wrongButton(transform.position, transform.parent.rotation);
