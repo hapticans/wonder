@@ -59,17 +59,13 @@ public class Sequence : SequenceElement
 		}
 
 		// Increment Return Counter when true was returned AND subsequence is fully satisfied
-		if (returnValue)
+		if (returnValue && elements[runner].counterReached())
 		{
-			if (elements[runner].counterReached()) {
 				returncounter++;
-			}
+        }
 
-            // Write to LogList
-            PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + returnValue.ToString());
-		}
-		// Sequenz abgearbeitet
-		if (counterReached())
+        // Sequenz abgearbeitet
+        if (counterReached())
 		{
 			PersistentManager.Instance.isProcedureDone(true);
 		}

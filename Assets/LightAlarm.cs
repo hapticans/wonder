@@ -22,8 +22,11 @@ public class LightAlarm : MonoBehaviour {
 
 	public void StopAlarm()
 	{
-		StopCoroutine ("redalarm");
-	}
+		StopCoroutine ("redAlarm");
+        Light light = GetComponent<Light>();
+        light.color = Color.white;
+        light.intensity = 0.7f;
+    }
 
 
     IEnumerator redAlarm()

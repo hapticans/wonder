@@ -65,14 +65,19 @@ public class CustomButton : MonoBehaviour
 			StartCoroutine(ems_handler.LockEMS_enum(2.0f));
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
-			if (lastProcedureStep == 1)
+
+            if (lastProcedureStep == 1)
 			{
-				feedbackForSucces(true);
+                // Write new Log to File
+                PersistentManager.Instance.writeLogFile("Zwischenschritt");
+                feedbackForSucces(true);
 			}
 			else
 			if (lastProcedureStep == 2)
 			{
-				feedbackForSucces(false);
+                // Write new Log to File
+                PersistentManager.Instance.writeLogFile("Sucessfully solved Procedure");
+                feedbackForSucces(false);
 			}
 		}
 		else
@@ -80,8 +85,10 @@ public class CustomButton : MonoBehaviour
 			StartCoroutine(resetColor());
 			mat.color = Color.red;
 			if (PersistentManager.Instance.isProcedureFailed())
-			{
-				feedbackForFailure();
+            {
+                // Write new Log to File
+                PersistentManager.Instance.writeLogFile("Failed Procedure");
+                feedbackForFailure();
 			}
 			if (enableDebugoutput) { Debug.Log("Pressed wrong button"); };
 		}
@@ -172,8 +179,8 @@ public class CustomButton : MonoBehaviour
 	//false entspricht alles geschafft
 	//true entspricht Zwischenschritt
 	public void feedbackForSucces(bool zwischenschritt)
-	{
-		if (zwischenschritt)
+    {
+        if (zwischenschritt)
 		{
 			mat.color = Color.white;
 			StartCoroutine(resetColor());
@@ -183,10 +190,14 @@ public class CustomButton : MonoBehaviour
 		{
 			mat.color = Color.blue;
 			StartCoroutine(resetColor());
-			//Debug.Log("Done!");
+            //Debug.Log("Done!");
 
-			// Disable Light Alarm
-			LightAlarm light1 = (LightAlarm)GameObject.Find("AlarmLight1").GetComponent(typeof(LightAlarm));
+            // Disable Light Alarm
+            GameObject test = GameObject.Find("AlarmLight1");
+            Component f = test.GetComponent(typeof(LightAlarm));
+            LightAlarm l = (LightAlarm)f;
+
+            LightAlarm light1 = (LightAlarm)GameObject.Find("AlarmLight1").GetComponent(typeof(LightAlarm));
 			light1.StopAlarm();
 
 			LightAlarm light2 = (LightAlarm)GameObject.Find("AlarmLight3").GetComponent(typeof(LightAlarm));
@@ -204,9 +215,6 @@ public class CustomButton : MonoBehaviour
 
 	public void feedbackForFailure()
 	{
-		// Write new Log to File
-		PersistentManager.Instance.writeLogFile();
-
 		Application.Quit();
 		mat.color = Color.black;
 		StartCoroutine(resetColor());

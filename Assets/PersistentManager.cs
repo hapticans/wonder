@@ -61,8 +61,8 @@ public class PersistentManager : MonoBehaviour
 			{
 				lastProcedureStep = 2;
 			}
-		}
-		else
+        }
+        else
 		{
 			lastProcedureStep = 0;
 		}
@@ -115,10 +115,16 @@ public class PersistentManager : MonoBehaviour
 		logmessages.Add(message);
 	}
 
-	public void writeLogFile()
+	public void writeLogFile(string reason)
 	{
-		Debug.Log(logmessages.ToString());
-		File.WriteAllText(Application.dataPath + "/logs/" + DateTime.Now, logmessages.ToString());      
+		String output = "";
+        foreach (string element in logmessages)
+        {
+            output += element + ";" + System.Environment.NewLine;
+        }
+        output += reason;
+
+		File.WriteAllText(Application.dataPath + "/logs/" + DateTime.Now.ToString().Replace("/","-").Replace(" ", "").Replace(":","_"), output);      
 	}
 
 }
