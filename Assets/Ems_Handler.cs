@@ -145,18 +145,18 @@ public class Ems_Handler : MonoBehaviour {
 		if(ems_Intensity < 60 || ems_lowDist_correct < ems_lowDist_wrong){
 			ems_Intensity = 0;
 		}
-		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/6){
+		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/3){
 			ems_Intensity = 100;
 		}
 	}
 
 	void EmsStyle_2(){ // harsher actuation, but larger deadzone around the right button
-		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.1f - ems_lowDist_wrong / (ems_triggerDistance*0.8f)) * 40));
+		ems_Intensity = (int) (System.Math.Ceiling(60 + (1.2f - ems_lowDist_wrong / (ems_triggerDistance*1.0f)) * 40));
 		if(ems_Intensity < 60 || ems_lowDist_correct < (ems_lowDist_wrong*1.2f)){
 			ems_Intensity = 0;
 		}
 
-		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/2){
+		else if(ems_Intensity > 100 || ems_lowDist_wrong < ems_triggerDistance/2.2f){
 			ems_Intensity = 100;
 		}
 	}
@@ -171,7 +171,7 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void EmsStyle_4(){
-		if(ems_lowDist_wrong < ems_triggerDistance/2f){
+		if(ems_lowDist_wrong < ems_triggerDistance/2.0f){
 			ems_Intensity = 100;
 		}
 		else if(ems_lowDist_wrong < ems_triggerDistance/1.6f){
@@ -195,11 +195,11 @@ public class Ems_Handler : MonoBehaviour {
 
 	void calculateSideIntensity(){
 		if(sideDeviceConnected && !ems_positiveFeedbackActive){
-			if(ems_wrong_angles.y < 340.0f && ems_wrong_angles.y > 300.0f){
+			if(ems_wrong_angles.y < 330.0f && ems_wrong_angles.y > 290.0f){
 				currentDirection = 0;
 				ems_SideIntensity = ems_Intensity - 10;
 			}
-			else if(ems_wrong_angles.y > 20.0f && ems_wrong_angles.y < 60.0f){
+			else if(ems_wrong_angles.y > 30.0f && ems_wrong_angles.y < 70.0f){
 				currentDirection = 1;
 				ems_SideIntensity = ems_Intensity - 10;
 			}
