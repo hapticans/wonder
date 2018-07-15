@@ -157,7 +157,7 @@ public class CustomButton : MonoBehaviour
 		{
 			// TODO: Insert Triggered events here
 			pressed = true;
-			Debug.Log("pressed " + localPos.y);
+			//Debug.Log("pressed " + localPos.y);
 			checkButton();
 		}
 		//Deactivate when released
@@ -165,7 +165,7 @@ public class CustomButton : MonoBehaviour
 		{
 			pressed = false;
 			released = true;
-			Debug.Log("released " + localPos.y);
+			//Debug.Log("released " + localPos.y);
 		}
 	}
 

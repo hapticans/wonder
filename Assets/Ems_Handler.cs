@@ -40,11 +40,11 @@ public class Ems_Handler : MonoBehaviour {
 	private int ems_lockedByInput;
 
 	// Config stuff
-	public bool debug_mode = true; // set to GUI output
-	public bool ems_active = true;  // activate EMS
-	public bool directionCheck_active = true; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
-	public bool positiveFeedbackActive = false; // pulsating encouragement downwards when facing the right button, and left/right for the right direction when approaching a knob TODO: implement condition
-	public bool sideDeviceConnected = true;
+	public bool debug_mode; // set to GUI output
+	public bool ems_negativeFeedbackActive;  // activate negative feedback EMS
+	public bool directionCheck_active; // EMS deactivates when user moves towards the right button. Caution: Test phase. TODO: Test
+	public bool ems_positiveFeedbackActive; // pulsating encouragement downwards when facing the right button, and left/right for the right direction when approaching a knob TODO: implement condition
+	public bool sideDeviceConnected;
 	public float ems_triggerDistance = 0.2f;
 
 
@@ -62,10 +62,10 @@ public class Ems_Handler : MonoBehaviour {
 
 			yield return new WaitForSeconds(0.15f); //Alternative
 			// yield return new WaitForSeconds(((float)(Time)) / 1000);
-			if(ems_active && ems_Intensity != 0 && ems_lockedByInput == 0){
+			if(ems_Intensity != 0 && ems_lockedByInput == 0 && ems_negativeFeedbackActive){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
 			}
-			if(ems_active && ems_SideIntensity != 0 && ems_lockedByInput == 0 && sideDeviceConnected){
+			if(ems_SideIntensity != 0 && ems_lockedByInput == 0 && sideDeviceConnected && !ems_positiveFeedbackActive && ems_negativeFeedbackActive){
 				StartEMS_LeftRight(currentDirection, ems_SideIntensity, Time);
 			}
 		}
@@ -74,10 +74,11 @@ public class Ems_Handler : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown (KeyCode.End)) {		// Key Event for Emergency Stop when pressing "End"
-			ems_active = false;
+			ems_negativeFeedbackActive = false;
+			ems_positiveFeedbackActive = false;
 			StartEMS_UpDown(channel_up, 1, 1);
 		}
-		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running){ // Key Event for Calibration run when pressing "Insert"
+		if (Input.GetKeyDown (KeyCode.Insert) && !emstest_running && ems_negativeFeedbackActive){ // Key Event for Calibration run when pressing "Insert"
 			StartCoroutine(EmsTest());
 		}
 	}
@@ -86,10 +87,10 @@ public class Ems_Handler : MonoBehaviour {
 		if(debug_mode && ems_lockedByInput == 0){
 			GUI.Label (new Rect(0,0,200,100), "EMS - Level = " + ems_Intensity);
 		}
-		if(debug_mode && sideDeviceConnected && !positiveFeedbackActive){
+		if(debug_mode && sideDeviceConnected && !ems_positiveFeedbackActive){
 			GUI.Label (new Rect(0,20,200,100), "Side Intensity = " + ems_SideIntensity);
 		}
-		if(debug_mode && sideDeviceConnected && !positiveFeedbackActive && ems_SideIntensity > 1){
+		if(debug_mode && sideDeviceConnected && !ems_positiveFeedbackActive && ems_SideIntensity > 1){
 			switch (currentDirection){
 				case 0:
 					GUI.Label (new Rect(0,40,300,100), "Left");
@@ -99,11 +100,11 @@ public class Ems_Handler : MonoBehaviour {
 					break;
 			}
 		}
-		if(ems_lockedByInput > 0 && debug_mode){
+		if(debug_mode && ems_lockedByInput > 0){
 			GUI.Label (new Rect(0,0,200,100), "EMS - Level = 0");
 			GUI.Label (new Rect(0,60,300,100), "EMS locked by right input or direction");
 		}
-		if(debug_mode && sideDeviceConnected && positiveFeedbackActive && pulsating){
+		if(debug_mode && ems_positiveFeedbackActive && pulsating){
 			GUI.Label (new Rect(0,80,200,100), "Pulsating");
 		}
 	}
@@ -193,7 +194,7 @@ public class Ems_Handler : MonoBehaviour {
 	}
 
 	void calculateSideIntensity(){
-		if(sideDeviceConnected && !positiveFeedbackActive){
+		if(sideDeviceConnected && !ems_positiveFeedbackActive){
 			if(ems_wrong_angles.y < 340.0f && ems_wrong_angles.y > 300.0f){
 				currentDirection = 0;
 				ems_SideIntensity = ems_Intensity - 10;
@@ -233,16 +234,20 @@ public class Ems_Handler : MonoBehaviour {
 		if(ems_lowDist_correct > distance_min){
 			ems_lowDist_correct = distance_min;
 		}
-		if(positiveFeedbackActive && sideDeviceConnected && ems_lowDist_correct < ems_triggerDistance / 2 && isKnob){
-			if(knob_leftIsCorrect && !pulsating){
-				// TODO: left pulse
-				Debug.Log("Approaching Knob (Left Correct)");
-				StartCoroutine(EMS_PulseLeftRight(0, 60, 250));
+
+		if(ems_positiveFeedbackActive){
+			if(isKnob && knob_leftIsCorrect && !pulsating  && sideDeviceConnected && ems_lowDist_correct < ems_triggerDistance / 2){
+				//Debug.Log("Approaching Knob (Left Correct)");
+				StartCoroutine(EMS_PulseLeftRight(channel_left, 60, 250));
 			}
-			else if(!knob_leftIsCorrect && !pulsating){
-				// TODO: right pulse
-				Debug.Log("Approaching Knob (Right Correct)");
-				StartCoroutine(EMS_PulseLeftRight(1, 60, 250));
+			else if(isKnob && !knob_leftIsCorrect && !pulsating  && sideDeviceConnected && ems_lowDist_correct < ems_triggerDistance / 2){
+				//Debug.Log("Approaching Knob (Right Correct)");
+				StartCoroutine(EMS_PulseLeftRight(channel_right, 60, 250));
+			}
+			else if(!isKnob && !pulsating && ems_lowDist_correct < ems_triggerDistance / 1.4f)
+			{
+				Debug.Log("Approaching Correct Button");
+				StartCoroutine(EMS_PulseDown(60,250));
 			}
 		}
 	}
@@ -259,12 +264,14 @@ public class Ems_Handler : MonoBehaviour {
 
 	public void Ems_SendMessage(string message)
 	{
-		Debug.Log("UDP: " + message);
-		var client = new UdpClient();
-		var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
-		client.Connect(ep);
-		var data = Encoding.ASCII.GetBytes(message);
-		client.Send(data, data.Length);
+
+			Debug.Log("UDP: " + message);
+			var client = new UdpClient();
+			var ep = new IPEndPoint(IPAddress.Parse(Server), Port);
+			client.Connect(ep);
+			var data = Encoding.ASCII.GetBytes(message);
+			client.Send(data, data.Length);
+
 	}
 
 
@@ -272,7 +279,7 @@ public class Ems_Handler : MonoBehaviour {
 	// Also to be called by the movement tracker, if the player moves towards the right object
 	public IEnumerator LockEMS_enum(float time){
 		ems_lockedByInput++;
-		if(ems_active && ems_lowDist_wrong < ems_triggerDistance){
+		if(ems_lowDist_wrong < ems_triggerDistance && ems_negativeFeedbackActive){
 			StartEMS_UpDown(channel_up, 1, 1);
 		}
 		yield return new WaitForSeconds(time);
@@ -307,6 +314,10 @@ public class Ems_Handler : MonoBehaviour {
 		pulsating = true;
 		StartEMS_UpDown(channel_down,i,t);
 		yield return new WaitForSeconds((((float)(t)) / 500));
+		StartEMS_UpDown(channel_down,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		StartEMS_UpDown(channel_down,i,t);
+		yield return new WaitForSeconds(2.0f);
 		pulsating = false;
 	}
 
