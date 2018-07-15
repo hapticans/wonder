@@ -124,11 +124,11 @@ public class PersistentManager : MonoBehaviour
 	public void writeLogFile(string reason)
 	{
 		String output = "";
+        logmessages.Add(reason);
         foreach (string element in logmessages)
         {
             output += element + ";" + System.Environment.NewLine;
         }
-        output += reason;
 
 		File.WriteAllText(Application.dataPath + "/logs/" + DateTime.Now.ToString().Replace("/","-").Replace(" ", "").Replace(":","_"), output);      
 	}
