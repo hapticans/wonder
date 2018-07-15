@@ -22,7 +22,7 @@ public class PersistentManager : MonoBehaviour
 
 	//Fehler und maximal erlaubte Fehler
 	private int strikes = 0;
-	private int maxStrikes = 3;
+	private int maxStrikes = 4;
 
     // Log
     List<string> logmessages = new List<string>();

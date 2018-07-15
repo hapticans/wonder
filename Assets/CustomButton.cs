@@ -31,6 +31,9 @@ public class CustomButton : MonoBehaviour
 
 	public bool enableDebugoutput;
 
+    // Tracks how many red bars are currently displayed
+    private int strikeMarker = 1;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -43,7 +46,15 @@ public class CustomButton : MonoBehaviour
 		buttonCollider1 = GameObject.Find(name.Remove(name.Length - 6) + "Cube1").GetComponent<Collider>();
 		buttonCollider2 = GameObject.Find(name.Remove(name.Length - 6) + "Cube2").GetComponent<Collider>();
 
-	}
+        // Start Strikecount blinking
+        for (int i = 1; i <= 20; i++)
+        {
+            GameObject t = GameObject.Find("Balken_" + i.ToString());
+            Material f = t.GetComponent<Renderer>().material;
+            f.color = Color.green;
+        }
+
+    }
 
 	// Update is called once per frame
 	void Update()
@@ -91,7 +102,15 @@ public class CustomButton : MonoBehaviour
                 PersistentManager.Instance.writeLogFile("Failed Procedure");
                 feedbackForFailure();
 			}
-			if (enableDebugoutput) { Debug.Log("Pressed wrong button"); };
+            for (int i = strikeMarker; i < strikeMarker+5; i++)
+            {
+                GameObject t = GameObject.Find("Balken_" + i.ToString());
+                Material f = t.GetComponent<Renderer>().material;
+                f.color = Color.red;
+            }
+            strikeMarker += 5;
+
+            if (enableDebugoutput) { Debug.Log("Pressed wrong button"); };
 		}
 	}
 
@@ -192,11 +211,6 @@ public class CustomButton : MonoBehaviour
 			mat.color = Color.blue;
 			StartCoroutine(resetColor());
             //Debug.Log("Done!");
-
-            // Disable Light Alarm
-            GameObject test = GameObject.Find("AlarmLight1");
-            Component f = test.GetComponent(typeof(LightAlarm));
-            LightAlarm l = (LightAlarm)f;
 
             LightAlarm light1 = (LightAlarm)GameObject.Find("AlarmLight1").GetComponent(typeof(LightAlarm));
 			light1.StopAlarm();
