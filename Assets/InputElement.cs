@@ -23,7 +23,7 @@ public class InputElement : SequenceElement
 			if (markAsDone) {
 				counter = true;
                 // Write to Log for later analysis
-                PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + counter.ToString());
+                PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + "true");
             }
             return true;
 		}

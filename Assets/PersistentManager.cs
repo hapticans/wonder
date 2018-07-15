@@ -47,7 +47,13 @@ public class PersistentManager : MonoBehaviour
 
 	public bool markIfValidStep(string name)
 	{
-		return procedure.checkIfCorrect(name, true);
+        bool iscorrect = procedure.checkIfCorrect(name, true);
+        if (!iscorrect)
+        {
+            // Write to Log for later analysis
+            PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now.ToString() + "," + false);
+        }
+        return iscorrect;
 	}
 
 	public int isProcedureDone(bool sqeunceJustDone)
