@@ -102,7 +102,7 @@ public class CustomButton : MonoBehaviour
 	{
 		if (PersistentManager.Instance.isStepValid(name))
 		{
-			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation);
+			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation, false, false);
 		}
 		else
 		{
@@ -124,6 +124,7 @@ public class CustomButton : MonoBehaviour
 		{
 			if (istriggering)
 			{
+				Debug.Log(istriggering);
 				istriggering = false;
 			}
 		}
@@ -156,8 +157,7 @@ public class CustomButton : MonoBehaviour
 		{
 			// TODO: Insert Triggered events here
 			pressed = true;
-
-			if (enableDebugoutput) { Debug.Log("Pressed Button at:" + localPos.y)};
+			Debug.Log("pressed " + localPos.y);
 			checkButton();
 		}
 		//Deactivate when released
@@ -165,7 +165,7 @@ public class CustomButton : MonoBehaviour
 		{
 			pressed = false;
 			released = true;
-			if (enableDebugoutput) { Debug.Log("released " + localPos.y)};
+			Debug.Log("released " + localPos.y);
 		}
 	}
 
@@ -173,9 +173,6 @@ public class CustomButton : MonoBehaviour
 	//true entspricht Zwischenschritt
 	public void feedbackForSucces(bool zwischenschritt)
 	{
-		// Write new Log to File
-		PersistentManager.Instance.writeLogFile();
-
 		if (zwischenschritt)
 		{
 			mat.color = Color.white;
@@ -208,7 +205,7 @@ public class CustomButton : MonoBehaviour
 	public void feedbackForFailure()
 	{
 		// Write new Log to File
-        PersistentManager.Instance.writeLogFile();
+		PersistentManager.Instance.writeLogFile();
 
 		Application.Quit();
 		mat.color = Color.black;

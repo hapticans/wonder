@@ -16,7 +16,7 @@ public class CustomKnob : MonoBehaviour
 	private Color prevColor;
 	// IMPORTANT: Made for a Knob with Rigidbody (Gravity disabled), Box Collider,
 	// Hinge Joint with all movement restricted, except for the y- axis, which is limited to -90 to 90 degrees
-   
+
 	void Start()
 	{
 		mat = GetComponent<Renderer>().material;
@@ -73,9 +73,13 @@ public class CustomKnob : MonoBehaviour
 
 	void handleEMS()
 	{  // TODO: Include feedback for starting to flip into the wrong direction
-		if (PersistentManager.Instance.isStepValid(name + "_L") || PersistentManager.Instance.isStepValid(name + "_R"))
+		if (PersistentManager.Instance.isStepValid(name + "_L"))
 		{
-			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation);
+			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation, true, true);
+		}
+		else if (PersistentManager.Instance.isStepValid(name + "_R"))
+		{
+			ems_handler.CheckEMS_rightButton(transform.position, transform.parent.rotation, true, false);
 		}
 		else
 		{

@@ -92,16 +92,19 @@ public class Ems_Handler : MonoBehaviour {
 		if(debug_mode && sideDeviceConnected && !positiveFeedbackActive && ems_SideIntensity > 1){
 			switch (currentDirection){
 				case 0:
-					GUI.Label (new Rect(0,40,100,100), currentDirection + "Left " + ems_wrong_angles.y + ",,," + ems_wrong_angles.x);
+					GUI.Label (new Rect(0,40,300,100), "Left");
 					break;
 				case 1:
-					GUI.Label (new Rect(0,40,100,100), currentDirection + "Right " + ems_wrong_angles.y + ",,," + ems_wrong_angles.x);
+					GUI.Label (new Rect(0,40,300,100), "Right");
 					break;
 			}
 		}
 		if(ems_lockedByInput > 0 && debug_mode){
 			GUI.Label (new Rect(0,0,200,100), "EMS - Level = 0");
 			GUI.Label (new Rect(0,60,300,100), "EMS locked by right input or direction");
+		}
+		if(debug_mode && sideDeviceConnected && positiveFeedbackActive && pulsating){
+			GUI.Label (new Rect(0,80,200,100), "Pulsating");
 		}
 	}
 
@@ -223,12 +226,24 @@ public class Ems_Handler : MonoBehaviour {
 
 	}
 	// to be called by right buttons during their update, in order to check their position for EMS relevance
-	public void CheckEMS_rightButton(Vector3 button_position, Quaternion button_parentrotation){
+	public void CheckEMS_rightButton(Vector3 button_position, Quaternion button_parentrotation, bool isKnob, bool knob_leftIsCorrect){
 
 		float distance_min = System.Math.Min(Vector3.Distance(button_position,player.position), Vector3.Distance(button_position,predictor.position));
 		playerButtonDistHelper = Vector3.Distance(button_position, player.position);
 		if(ems_lowDist_correct > distance_min){
 			ems_lowDist_correct = distance_min;
+		}
+		if(positiveFeedbackActive && sideDeviceConnected && ems_lowDist_correct < ems_triggerDistance / 2 && isKnob){
+			if(knob_leftIsCorrect && !pulsating){
+				// TODO: left pulse
+				Debug.Log("Approaching Knob (Left Correct)");
+				StartCoroutine(EMS_PulseLeftRight(0, 60, 250));
+			}
+			else if(!knob_leftIsCorrect && !pulsating){
+				// TODO: right pulse
+				Debug.Log("Approaching Knob (Right Correct)");
+				StartCoroutine(EMS_PulseLeftRight(1, 60, 250));
+			}
 		}
 	}
 
@@ -281,6 +296,10 @@ public class Ems_Handler : MonoBehaviour {
 		pulsating = true;
 		StartEMS_LeftRight(c,i,t);
 		yield return new WaitForSeconds((((float)(t)) / 500));
+		StartEMS_LeftRight(c,i,t);
+		yield return new WaitForSeconds((((float)(t)) / 500));
+		StartEMS_LeftRight(c,i,t);
+		yield return new WaitForSeconds(3.0f);
 		pulsating = false;
 	}
 
