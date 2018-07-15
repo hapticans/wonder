@@ -59,17 +59,18 @@ public class Sequence : SequenceElement
 		}
 
 		// Increment Return Counter when true was returned AND subsequence is fully satisfied
-		if (returnValue && elements[runner].counterReached())
+		if (returnValue)
 		{
-			returncounter++;
+			if (elements[runner].counterReached()) {
+				returncounter++;
+			}
 
 			// Write to LogList
-			PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now);
+			PersistentManager.Instance.addLogMessage(name + "," + DateTime.Now + "," + returnValue.ToString);
 		}
 		// Sequenz abgearbeitet
 		if (counterReached())
 		{
-			Debug.Log("Squenz Done 1st!");
 			PersistentManager.Instance.isProcedureDone(true);
 		}
 		return returnValue;
