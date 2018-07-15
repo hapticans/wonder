@@ -60,8 +60,9 @@ public class CustomButton : MonoBehaviour
 		if (PersistentManager.Instance.markIfValidStep(name))
 		{
 			mat.color = Color.green;
+            StartCoroutine(resetColor());
 
-			if (enableDebugoutput) { Debug.Log("Pressed Correct Button"); };
+            if (enableDebugoutput) { Debug.Log("Pressed Correct Button"); };
 			StartCoroutine(ems_handler.LockEMS_enum(2.0f));
 
 			int lastProcedureStep = PersistentManager.Instance.isProcedureDone(false);
