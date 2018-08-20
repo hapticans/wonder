@@ -33,6 +33,7 @@ public class Ems_Handler : MonoBehaviour {
 	private int Time = 175;
 	private int ems_Intensity;
 	private int ems_SideIntensity;
+	private int ems_downIntensity;
 
 	private bool emstest_running = false;
 	private bool checkingDirection = false;
@@ -64,6 +65,9 @@ public class Ems_Handler : MonoBehaviour {
 			// yield return new WaitForSeconds(((float)(Time)) / 1000);
 			if(ems_Intensity != 0 && ems_lockedByInput == 0 && ems_negativeFeedbackActive){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
+			}
+			if(ems_downIntensity != 0 && ems_lockedByInput == 0 && ems_positiveFeedbackActive){
+				StartEMS_UpDown(channel_down, ems_downIntensity, Time);
 			}
 			if(ems_SideIntensity != 0 && ems_lockedByInput == 0 && sideDeviceConnected && !ems_positiveFeedbackActive && ems_negativeFeedbackActive){
 				StartEMS_LeftRight(currentDirection, ems_SideIntensity, Time);
@@ -106,6 +110,9 @@ public class Ems_Handler : MonoBehaviour {
 		if(debug_mode && ems_positiveFeedbackActive && pulsating){
 			GUI.Label (new Rect(0,80,200,100), "Pulsating");
 		}
+		if(debug_mode && ems_positiveFeedbackActive && ems_mode == 2){
+			GUI.Label (new Rect(0,100,200,100), "EMS - Level Downwards = " + ems_downIntensity);
+		}
 	}
 
 	// Calculation of EMS Intensity and EMS-Activation in LateUpdate, since all Position reports come in during Update. Avoids excution order configuration
@@ -124,7 +131,7 @@ public class Ems_Handler : MonoBehaviour {
 				EmsStyle_4();
 				break;
 		}
-
+		calculateDownIntensity();
 		calculateSideIntensity();
 
 		if(!checkingDirection && directionCheck_active){
@@ -211,6 +218,18 @@ public class Ems_Handler : MonoBehaviour {
 		}
 	}
 
+	private void calculateDownIntensity(){
+		if(ems_positiveFeedbackActive){
+			ems_downIntensity = (int) (System.Math.Ceiling(60 + (1.2f - ems_lowDist_correct / (ems_triggerDistance*0.8f)) * 40));
+			if(ems_Intensity > 0 || ems_lowDist_correct > ems_triggerDistance || ems_downIntensity < 60){
+				ems_downIntensity = 0;
+			}
+			if(ems_downIntensity > 100){
+				ems_downIntensity = 100;
+			}
+		}
+	}
+
 	// to be called by wrong buttons during their update, in order to check their position for EMS relevance
 	public void CheckEMS_wrongButton(Vector3 button_position, Quaternion button_parentrotation){
 
@@ -243,10 +262,10 @@ public class Ems_Handler : MonoBehaviour {
 				//Debug.Log("Approaching Knob (Right Correct)");
 				StartCoroutine(EMS_PulseLeftRight(channel_right, 60, 250));
 			}
-			else if(!isKnob && !pulsating && ems_lowDist_correct < ems_triggerDistance / 1.4f)
+			else if(!isKnob && !pulsating && ems_lowDist_correct < ems_triggerDistance / 1.4f && ems_mode != 2)
 			{
 				Debug.Log("Approaching Correct Button");
-				StartCoroutine(EMS_PulseDown(60,250));
+				StartCoroutine(EMS_PulseDown(60,250));  // deactivated for now; TODO: Make toggle for Pulse or continuous positive Feedback
 			}
 		}
 	}
