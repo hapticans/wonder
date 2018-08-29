@@ -66,7 +66,7 @@ public class Ems_Handler : MonoBehaviour {
 			if(ems_Intensity != 0 && ems_lockedByInput == 0 && ems_negativeFeedbackActive){
 				StartEMS_UpDown(channel_up, ems_Intensity, Time);
 			}
-			if(ems_downIntensity != 0 && ems_lockedByInput == 0 && ems_positiveFeedbackActive){
+			if(ems_downIntensity != 0 && ems_lockedByInput == 0 && ems_positiveFeedbackActive && (ems_mode == 2 || ems_mode == 4)){
 				StartEMS_UpDown(channel_down, ems_downIntensity, Time);
 			}
 			if(ems_SideIntensity != 0 && ems_lockedByInput == 0 && sideDeviceConnected && !ems_positiveFeedbackActive && ems_negativeFeedbackActive){
@@ -107,10 +107,10 @@ public class Ems_Handler : MonoBehaviour {
 			GUI.Label (new Rect(0,0,200,100), "EMS - Level = 0");
 			GUI.Label (new Rect(0,60,300,100), "EMS locked by right input or direction");
 		}
-		if(debug_mode && ems_positiveFeedbackActive && pulsating){
+		if(debug_mode && ems_positiveFeedbackActive && pulsating && ems_mode != 2 && ems_mode != 4){
 			GUI.Label (new Rect(0,80,200,100), "Pulsating");
 		}
-		if(debug_mode && ems_positiveFeedbackActive && ems_mode == 2){
+		if(debug_mode && ems_positiveFeedbackActive && (ems_mode == 2 || ems_mode == 4)){
 			GUI.Label (new Rect(0,100,200,100), "EMS - Level Downwards = " + ems_downIntensity);
 		}
 	}
@@ -262,7 +262,7 @@ public class Ems_Handler : MonoBehaviour {
 				//Debug.Log("Approaching Knob (Right Correct)");
 				StartCoroutine(EMS_PulseLeftRight(channel_right, 60, 250));
 			}
-			else if(!isKnob && !pulsating && ems_lowDist_correct < ems_triggerDistance / 1.4f && ems_mode != 2)
+			else if(!isKnob && !pulsating && ems_lowDist_correct < ems_triggerDistance / 1.4f && ems_mode != 2 && ems_mode != 4)
 			{
 				Debug.Log("Approaching Correct Button");
 				StartCoroutine(EMS_PulseDown(60,250));  // deactivated for now; TODO: Make toggle for Pulse or continuous positive Feedback
