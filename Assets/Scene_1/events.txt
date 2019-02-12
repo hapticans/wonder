@@ -1,0 +1,4 @@
+
+// Starttime in sek, Lautsprecher, 
+
+10;

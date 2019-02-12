@@ -1,0 +1,14 @@
+Schema:
+
+Sequenzname:Anzahl_der_Untersequenzen_die_erfuellt_werden_muessen,Muessen_in_der_Reihenfolge_abgearbeitet_werden,Untersequenz1,...,UntersequenzX;
+
+Beispiel:
+
+Hauptsequenz:2,false,Untersequenz1,Druckschalter_2_Knopf;
+Untersequenz1:3,true,Druckschalter_5_Knopf,Druckschalter_2_Knopf,Untersequenz8;
+Untersequenz8:1,false,Druckschalter_8_Knopf,Druckschalter_4_Knopf,Druckschalter_11_Knopf;
+
+Hinweise:
+ - Auf Zeichen achten (Kommata,Doppelpunkt,Semikolon sind alle wichtig)
+ - Keine zusätzlichen Linebreaks(Enter)
+ - Einstiegspunkt is immer die Sequenz in Zeile 1

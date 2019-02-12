@@ -1,0 +1,14 @@
+TODO:
+
+Neue Szene integrieren (Specki)
+Green Light feedback (Jens)
+Strikes deutlicher machen (Tobi - Specki)
+Win deutlich machen - alarm hört auf (Specki)
+Test Areal (Tobi)
+Procedure Editor (Jens)
+Button Animation (Tobik)
+EMS Integration/Verbesserung (Tobik)
+Studienplanung (Suli + Lukas)
+
+
+Reset Funktion ()
